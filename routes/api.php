@@ -18,5 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
 Route::get('/users',[SenderController::class,'send']);
+
+Route::post('/login', [SenderController::class,'login']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/users/send',[SenderController::class,'sendToMobile']);
+});

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\MainController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('admin')->group(function () {
-    Route::get('/',[MainController::class,'index']);
-    Route::resource('/users',\App\Http\Controllers\Admin\UserController::class);
+Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
+    Route::get('/',[MainController::class,'dashboard'])->name('dashboard');
+    Route::resource('/users',UserController::class);
 });
 
 Auth::routes();
