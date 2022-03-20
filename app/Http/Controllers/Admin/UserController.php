@@ -5,17 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function index()
     {
-        return User::all();
+        $users = User::all();
+        return view('admin.users.index',compact('users'));
     }
 
     /**
@@ -25,7 +27,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.users.create');
     }
 
     /**
@@ -36,7 +38,19 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'email' => 'required|email',
+            'name' => 'required',
+            'password' => 'required|min:8',
+        ]);
+
+        User::create([
+            'name'=>$request->input('name'),
+            'email'=>$request->input('email'),
+            'password'=>Hash::make($request->input('password'))
+        ]);
+
+        return redirect(route('admin.users.index'));
     }
 
     /**
@@ -47,18 +61,19 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return $user;
+        $purchased_packages=[];
+        return view('admin.users.show',compact('purchased_packages','user'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function edit(User $user)
     {
-        //
+        return view('admin.users.edit',compact('user'));
     }
 
     /**
@@ -70,7 +85,15 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+//        return $request->all();
+        $request->validate([
+            'email' => 'required|email',
+            'name' => 'required',
+        ]);
+
+        $user->update($request->all());
+
+        return redirect(route('admin.users.index'));
     }
 
     /**
@@ -81,6 +104,9 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return response()->json([
+            'status'=>true
+        ]);
     }
 }

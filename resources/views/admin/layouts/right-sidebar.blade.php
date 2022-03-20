@@ -7,7 +7,7 @@
         <div id="sidebar-menu">
             <!-- Left Menu Start -->
             <ul class="metismenu list-unstyled" id="side-menu">
-                <li class="menu-title">Menu</li>
+                <li class="menu-title">منوی مدیریت</li>
 
                 <li>
                     <a href="{{route('admin.dashboard')}}" class="waves-effect">
@@ -17,7 +17,7 @@
                 </li>
 
                 <li>
-                    <a href="{{route('admin.dashboard')}}" class=" waves-effect">
+                    <a href="{{route('admin.users.index')}}" class=" waves-effect">
                         <div class="d-inline-block icons-sm mr-1"><i class="uim uim-sign-in-alt"></i></div>
                         <span>کاربران</span>
                     </a>

@@ -14,8 +14,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('/start',[MainController::class,'startPrj']);
 Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
+
+
     Route::get('/',[MainController::class,'dashboard'])->name('dashboard');
     Route::resource('/users',UserController::class);
 });

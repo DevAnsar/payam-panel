@@ -20,6 +20,9 @@
     <link href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
     <link href="{{asset('assets/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
+
+    @yield('css-files')
+
     <!-- App Css-->
     <link href="{{asset('assets/css/app-rtl.min.css')}}" rel="stylesheet" type="text/css" />
 
@@ -27,6 +30,7 @@
 
 <body data-topbar="colored">
 
+<div id="app">
 <!-- Begin page -->
 <div id="layout-wrapper">
 
@@ -44,6 +48,7 @@
 
 </div>
 <!-- END layout-wrapper -->
+</div>
 
 {{--@include('admin.layouts.left-bar')--}}
 
@@ -71,9 +76,10 @@
 <script src="{{asset('assets/libs/jqvmap/jquery.vmap.min.js')}}"></script>
 <script src="{{asset('assets/libs/jqvmap/maps/jquery.vmap.usa.js')}}"></script>
 
-<script src="{{asset('assets/js/pages/dashboard.init.js')}}"></script>
+
+@yield('js-files')
 
 <script src="{{asset('assets/js/app.js')}}"></script>
-
+<script src="{{asset('js/app.js')}}"></script>
 </body>
 </html>

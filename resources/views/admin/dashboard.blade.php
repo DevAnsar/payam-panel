@@ -421,3 +421,8 @@
     <!-- End Page-content -->
 
 @endsection
+
+
+@section('js-files')
+    <script src="{{asset('assets/js/pages/dashboard.init.js')}}"></script>
+@endsection
