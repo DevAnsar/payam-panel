@@ -23,7 +23,10 @@ class User extends Authenticatable
         'email',
         'password',
         'basketCount',
-        'usedCount'
+        'usedCount',
+        'mobile',
+        'loginCode',
+        'loginCodeExpire'
     ];
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\SenderController;
+use App\Http\Controllers\Api\UserControllerApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::get('/users',[SenderController::class,'send']);
 
-Route::post('/login', [SenderController::class,'login']);
+Route::post('/login/send_code', [UserControllerApi::class,'login_send_code']);
+Route::post('/login/mobile', [UserControllerApi::class,'login_with_mobile']);
+
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/users/send',[SenderController::class,'sendToMobile']);
+    Route::post('/users/sendSocial',[SenderController::class,'sendSocialToMobile']);
 });

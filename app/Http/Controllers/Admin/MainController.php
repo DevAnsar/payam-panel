@@ -14,7 +14,9 @@ class MainController extends Controller
         $userData=[
             'name'=>'ansar mirzayi',
             'email'=>'ansarmirzayi@gmail.com',
-            'password'=>Hash::make('12345678')
+            'password'=>Hash::make('12345678'),
+            'mobile'=>"09036587580",
+
         ];
         $has_user=User::query()->where('email',$userData['email'])->first();
         if (! $has_user)

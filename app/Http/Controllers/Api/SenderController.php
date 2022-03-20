@@ -11,33 +11,26 @@ use Illuminate\Validation\ValidationException;
 class SenderController extends Controller
 {
 
-    public function login(Request $request){
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-            'device_name' => 'required',
-        ]);
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['اطلاعات ورودی صحیح نمیباشد'],
-            ]);
-        }
-        return $user->createToken($request->device_name)->plainTextToken;
-    }
-
     public function send(Request $request){
-
         return response()->json(['users'=>User::all()]);
     }
 
-    public function sendToMobile(Request $request){
-        $mobile = $request->mobile;
-        $result = $this->sendSmsFromKaveNegar($mobile);
-        return response()->json([
-            'status'=>true,
-            'res'=>$result
-        ]);
+    public function sendSocialToMobile(Request $request){
+
+        $request->validate(['mobile'=>'required|size:11']);
+        try{
+            $mobile = $request->mobile;
+            $result = $this->sender([$mobile],"آدرس اینستاگرام من : dev_ansar");
+            return response()->json([
+                'status'=>true,
+                'res'=>$result
+            ]);
+        }catch (\Exception $exception){
+            return response('','500')->json([
+                'status'=>false,
+                'res'=>$exception->getMessage()
+            ]);
+        }
+
     }
 }
