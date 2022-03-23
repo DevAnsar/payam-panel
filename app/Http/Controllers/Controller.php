@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\lib\SMSIR\SmsIRClient;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -10,34 +11,9 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    private $protocol ='KAVE_NEGAR';
+    private $protocol ='SMSIR';
 
-    /**
-     * @param array $mobiles
-     * @param string $message
-     * @return array
-     */
-    public function sendSmsFromKaveNegar($mobiles,$message){
-        $api = new \Kavenegar\KavenegarApi( env('KAVE_NEGAR_API_KEY') );
-//        $sender = "10004346";
-        $sender = "10008663";
-//        $message = "";
 
-        $result = $api->Send($sender,$mobiles,$message);
-//        if($result){
-//            foreach($result as $r){
-//                echo "messageid = $r->messageid";
-//                echo "message = $r->message";
-//                echo "status = $r->status";
-//                echo "statustext = $r->statustext";
-//                echo "sender = $r->sender";
-//                echo "receptor = $r->receptor";
-//                echo "date = $r->date";
-//                echo "cost = $r->cost";
-//            }
-//        }
-        return $result;
-    }
 
 
     /**
@@ -47,8 +23,27 @@ class Controller extends BaseController
      */
     public function sender($mobiles , $message){
 
-        if($this->protocol == 'KAVE_NEGAR')
-        return $this->sendSmsFromKaveNegar($mobiles,$message);
+        try{
+
+            if($this->protocol == 'KAVE_NEGAR'){
+                $sender=new KaveNegarController();
+                return $sender->sendSmsFromKaveNegar($mobiles,$message);
+            }elseif($this->protocol == 'SMSIR'){
+
+                $apiKey = getenv('API_KEY');
+                $secretKey = getenv('SECRET_KEY');
+                $lineNumber = getenv('LINE_NUMBER');
+
+                $smsir = new SmsIRClient($apiKey, $secretKey, $lineNumber);
+                return $res = $smsir->send([$message], $mobiles);
+            }
+
+        }catch (\GuzzleHttp\Exception\GuzzleException $e) {
+            error_log($e->getMessage(), 0);
+        }
+
+
+
     }
 
     /**
