@@ -17,6 +17,7 @@ class Customer extends Model
      */
     protected $fillable = [
         'mobile',
-        'user_id'
+        'user_id',
+        'name',
     ];
 }

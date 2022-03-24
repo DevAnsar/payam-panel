@@ -23,13 +23,8 @@
                     </a>
                 </li>
 
-                <li>
-                    <a href="{{route('admin.dashboard')}}" class=" waves-effect">
-                        <div class="d-inline-block icons-sm mr-1"><i class="uim uim-box"></i></div>
-                        <span>اشتراک ها</span>
-                    </a>
-                </li>
 
+                <li class="menu-title">منوی تنظیمات</li>
                 <li>
                     <a href="{{route('admin.medias.index')}}" class=" waves-effect">
                         <div class="d-inline-block icons-sm mr-1"><i class="uim uim-box"></i></div>

@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sent_boxes', function (Blueprint $table) {
+        Schema::create('user_packages', function (Blueprint $table) {
             $table->id();
-            $table->string('mobile');
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->text('text')->nullable();
+            $table->unsignedBigInteger('package_id');
+            $table->string('description')->nullable();
+            $table->string('price');
+            $table->unsignedInteger('count');
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sent_boxes');
+        Schema::dropIfExists('user_packages');
     }
 };

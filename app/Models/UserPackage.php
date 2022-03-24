@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SentBox extends Model
+class UserPackage extends Model
 {
     use HasFactory;
 
@@ -15,8 +15,10 @@ class SentBox extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'mobile',
         'user_id',
-        'text'
+        'package_id',
+        'price',
+        'count',
+        'description'
     ];
 }

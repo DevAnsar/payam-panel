@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('mobile');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->string('name')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

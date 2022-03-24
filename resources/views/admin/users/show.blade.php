@@ -64,62 +64,201 @@
                                 </div>
                                 <h5 class="header-title mb-4">مشخصات کاربری</h5>
                                 <div class="row">
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6 mb-4">
                                         <h4 class="card-title font-size-16 mt-0 d-inline">نام کاربر :</h4>
-                                        <p class="card-text d-inline">{{$user->name}}</p>
+                                        <p class="card-text d-inline">
+                                            @if($user->name)
+                                                {{$user->name}}
+                                            @else
+                                            <span class="badge badge-soft-warning">
+                                                تعریف نشده
+                                            </span>
+                                            @endif
+                                        </p>
                                     </div>
 
 
-                                    <div class="col-6">
+                                    <div class="col-12 col-md-6 mb-4">
                                         <h4 class="card-title font-size-16 mt-0 d-inline">ایمیل کاربر :</h4>
-                                        <p class="card-text d-inline">{{$user->email}}</p>
+                                        <p class="card-text d-inline">
+                                            @if($user->email)
+                                                {{$user->email}}
+                                            @else
+                                                <span class="badge badge-soft-warning">
+                                                تعریف نشده
+                                            </span>
+                                            @endif
+                                        </p>
                                     </div>
 
+                                    <div class="col-12 col-md-6 mb-4">
+                                        <h4 class="card-title font-size-16 mt-0 d-inline">شماره موبایل :</h4>
+                                        <p class="card-text d-inline">
+                                            @if($user->mobile)
+                                                {{$user->mobile}}
+                                            @else
+                                                <span class="badge badge-soft-warning">
+                                                تعریف نشده
+                                            </span>
+                                            @endif
+                                        </p>
+                                    </div>
+
+                                    <div class="col-12 col-md-6 mb-4">
+                                        <h4 class="card-title font-size-16 mt-0 d-inline">تاریخ عضویت :</h4>
+                                        <p class="card-text d-inline">
+                                            @if($user->created_at)
+                                                {{$user->created_at}}
+                                            @else
+                                                <span class="badge badge-soft-warning">
+                                                تعریف نشده
+                                            </span>
+                                            @endif
+                                        </p>
+                                    </div>
                                 </div>
 
                             </div>
                         </div>
 
-
                         <div class="card">
                             <div class="card-body">
-                                <div class="float-right ml-2">
-{{--                                                                        <a href="#">View all</a>--}}
-                                </div>
-                                <h5 class="header-title mb-4">اشتراکات خریداری شده</h5>
 
-                                <div class="table-responsive">
-                                    @if(sizeof($purchased_packages) > 0)
-                                    <table class="table table-centered table-hover mb-0">
-                                        <thead>
-                                        <tr>
-                                            <th scope="col">ردیف</th>
-                                            <th scope="col">عنوان</th>
-                                            <th scope="col">تعداد</th>
-                                            <th scope="col">مبلغ</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
+                                <h4 class="header-title">
+                                    گزارشات
+                                </h4>
+                                <p class="card-title-desc">
+{{--                                    //--}}
+                                </p>
 
-                                        @foreach($purchased_packages as $purchased_package)
-                                            <tr>
-                                                <th scope="row">
-                                                    <a href="#">{{$loop->index}}</a>
-                                                </th>
-                                                <td>{{$purchased_package->description}}</td>
-                                                <td>{{$purchased_package->count}}</td>
-                                                <td>{{$purchased_package->price}}</td>
-                                            </tr>
-                                        @endforeach
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active"
+                                           data-toggle="tab"
+                                           href="#send_box" role="tab" aria-controls="send_box-tab" aria-selected="true">
+                                            <i class="mdi mdi-home-variant-outline font-size-18 mr-1 align-middle"></i>
+                                            <span class="d-none d-md-inline-block">آخرین ارسال ها</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab"
+                                           href="#packages" role="tab" aria-controls="packages-tab" aria-selected="true">
+                                            <i class="mdi mdi-account-outline font-size-18 mr-1 align-middle"></i>
+                                            <span class="d-none d-md-inline-block">اشتراکات خریداری شده</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab"
+                                           href="#customers" role="tab" aria-controls="customers-tab" aria-selected="true">
+                                            <i class="mdi mdi-email-outline font-size-18 mr-1 align-middle"></i>
+                                            <span class="d-none d-md-inline-block">مشتری ها</span>
+                                        </a>
+                                    </li>
 
-                                        </tbody>
-                                    </table>
-                                    @else
-                                        <div class="alert alert-warning">
-                                            اشتراکی برای کاربر وجود ندارد
+                                </ul>
+
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="send_box" role="tabpanel" aria-labelledby="send_box-tab">
+                                        <div class="table-responsive mt-4">
+                                            @if(sizeof($user_sends) > 0)
+                                                <table class="table table-centered table-hover mb-0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th scope="col">ردیف</th>
+                                                        <th scope="col">شماره موبایل</th>
+                                                        <th scope="col">متن</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    @foreach($user_sends as $user_send)
+                                                        <tr>
+                                                            <th scope="row">
+                                                                <a href="#">{{$loop->index}}</a>
+                                                            </th>
+                                                            <td>{{$user_send->mobile}}</td>
+                                                            <td>{{$user_send->text}}</td>
+                                                        </tr>
+                                                    @endforeach
+
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <div class="alert alert-warning">
+                                                    ارسالی ثبت نشده است
+                                                </div>
+
+                                            @endif
                                         </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="packages" role="tabpanel" aria-labelledby="packages-tab">
+                                        <div class="table-responsive mt-4">
+                                            @if(sizeof($purchased_packages) > 0)
+                                                <table class="table table-centered table-hover mb-0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th scope="col">ردیف</th>
+                                                        <th scope="col">عنوان</th>
+                                                        <th scope="col">تعداد</th>
+                                                        <th scope="col">مبلغ</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
 
-                                    @endif
+                                                    @foreach($purchased_packages as $purchased_package)
+                                                        <tr>
+                                                            <th scope="row">
+                                                                <a href="#">{{$loop->index}}</a>
+                                                            </th>
+                                                            <td>{{$purchased_package->title}}</td>
+                                                            <td>{{$purchased_package->count}}</td>
+                                                            <td>{{$purchased_package->price}}</td>
+                                                        </tr>
+                                                    @endforeach
+
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <div class="alert alert-warning">
+                                                    اشتراکی برای کاربر وجود ندارد
+                                                </div>
+
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="customers" role="tabpanel" aria-labelledby="customers-tab">
+                                        <div class="table-responsive mt-4">
+                                            @if(sizeof($user_customers) > 0)
+                                                <table class="table table-centered table-hover mb-0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th scope="col">ردیف</th>
+                                                        <th scope="col">شماره موبایل</th>
+                                                        <th scope="col">نام</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    @foreach($user_customers as $user_customer)
+                                                        <tr>
+                                                            <th scope="row">
+                                                                <a href="#">{{$loop->index}}</a>
+                                                            </th>
+                                                            <td>{{$user_customer->mobile}}</td>
+                                                            <td>{{$user_customer->name}}</td>
+                                                        </tr>
+                                                    @endforeach
+
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <div class="alert alert-warning">
+                                                    مشتری برای کاربر وجود ندارد
+                                                </div>
+
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>

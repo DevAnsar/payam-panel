@@ -61,8 +61,10 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $purchased_packages=[];
-        return view('admin.users.show',compact('purchased_packages','user'));
+        $purchased_packages=$user->user_packages()->get();
+        $user_customers=$user->user_customers()->get();
+        $user_sends=$user->user_sends()->get();
+        return view('admin.users.show',compact('purchased_packages','user','user_customers','user_sends'));
     }
 
     /**
