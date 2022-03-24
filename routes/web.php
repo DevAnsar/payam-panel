@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\MediaController;
+use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,7 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
     Route::get('/',[MainController::class,'dashboard'])->name('dashboard');
     Route::resource('/users',UserController::class);
     Route::resource('/medias',MediaController::class);
+    Route::resource('/packages',PackageController::class);
 });
 
 Auth::routes();

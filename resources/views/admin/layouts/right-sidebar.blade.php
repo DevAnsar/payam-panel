@@ -37,6 +37,13 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="{{route('admin.packages.index')}}" class=" waves-effect">
+                        <div class="d-inline-block icons-sm mr-1"><i class="uim uim-box"></i></div>
+                        <span>پکیج ها</span>
+                    </a>
+                </li>
+
 {{--                <li>--}}
 {{--                    <a href="javascript: void(0);" class="has-arrow waves-effect">--}}
 {{--                        <div class="d-inline-block icons-sm mr-1"><i class="uim uim-comment-message"></i></div>--}}
