@@ -19,5 +19,6 @@ class Media extends Model
         'title',
         'icon',
         'base_url',
+        'status'
     ];
 }
