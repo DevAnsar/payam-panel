@@ -21,7 +21,12 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
 
 
     Route::get('/',[MainController::class,'dashboard'])->name('dashboard');
-    Route::resource('/users',UserController::class);
+
+    Route::middleware('auth')->group(function (){
+        Route::resource('users',UserController::class);
+        Route::get('users/{user}/medias/edit',[UserController::class,'showUserLinks'])->name('users.medias.edit');
+        Route::post('users/{user}/medias/edit',[UserController::class,'updateUserLinks'])->name('users.medias.update');
+    });
     Route::resource('/medias',MediaController::class);
     Route::resource('/packages',PackageController::class);
 });

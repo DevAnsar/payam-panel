@@ -19,4 +19,13 @@ class Links extends Model
         'user_id',
         'media_id',
     ];
+
+    public function media(){
+        return $this->belongsTo(Media::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
 }

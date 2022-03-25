@@ -59,4 +59,8 @@ class User extends Authenticatable
     public function user_sends(){
         return $this->hasMany(SentBox::class);
     }
+
+    public function links(){
+        return $this->hasMany(Links::class);
+    }
 }

@@ -21,4 +21,8 @@ class Media extends Model
         'base_url',
         'status'
     ];
+
+    public function links(){
+        return $this->hasMany(Links::class);
+    }
 }

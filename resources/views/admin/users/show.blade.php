@@ -141,6 +141,14 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
+                                        <a class="nav-link "
+                                           data-toggle="tab"
+                                           href="#links" role="tab" aria-controls="links-tab" aria-selected="true">
+                                            <i class="mdi mdi-home-variant-outline font-size-18 mr-1 align-middle"></i>
+                                            <span class="d-none d-md-inline-block">لینک ها</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a class="nav-link" data-toggle="tab"
                                            href="#packages" role="tab" aria-controls="packages-tab" aria-selected="true">
                                             <i class="mdi mdi-account-outline font-size-18 mr-1 align-middle"></i>
@@ -158,6 +166,7 @@
                                 </ul>
 
                                 <div class="tab-content" id="myTabContent">
+
                                     <div class="tab-pane fade show active" id="send_box" role="tabpanel" aria-labelledby="send_box-tab">
                                         <div class="table-responsive mt-4">
                                             @if(sizeof($user_sends) > 0)
@@ -191,6 +200,80 @@
                                             @endif
                                         </div>
                                     </div>
+
+                                    <div class="tab-pane fade" id="links" role="tabpanel" aria-labelledby="links-tab">
+                                        <div class="table-responsive mt-4">
+                                            @if(sizeof($medias) > 0)
+                                                <a class="text-white " href="{{route('admin.users.medias.edit',['user'=>$user])}}">
+                                                   <button class="btn btn-info waves-effect waves-light ">ویرایش لینک ها</button>
+                                                </a>
+                                                <table class="table table-centered table-hover mb-0 mt-4">
+                                                    <thead>
+                                                    <tr>
+                                                        <th scope="col">ردیف</th>
+                                                        <th scope="col">عنوان</th>
+                                                        <th scope="col" style="text-align: center">مقدار</th>
+                                                        <th scope="col">تعداد کاراکتر</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    @foreach($medias as $media)
+                                                        <tr>
+                                                            <th scope="row">
+                                                               {{$loop->index + 1}}
+                                                            </th>
+                                                            <td>{{$media->title}}</td>
+                                                            <td>
+
+                                                                <div class="d-flex flex-row-reverse align-items-center justify-content-center">
+                                                                @if($media->link != null )
+
+                                                                    <a href="{{$media->base_url . $media->link->value}}" target="_blank" class="d-flex flex-row-reverse align-items-center">
+                                                                        <span style="direction: ltr">{{$media->base_url}}</span>
+                                                                        <span style="direction: ltr" class="badge badge-soft-info">{{$media->link->value}}</span>
+                                                                    </a>
+
+                                                                @else
+                                                                    <span class="badge badge-soft-warning">بدون مقدار</span>
+                                                                @endif
+                                                                </div>
+
+                                                            </td>
+                                                            <td>
+                                                                @if($media->link != null )
+                                                                    {{strlen($media->link->value)}}
+                                                                @else
+                                                                    0
+                                                                @endif</td>
+                                                        </tr>
+                                                    @endforeach
+
+                                                    <tr>
+                                                        <td ></td>
+                                                        <td ></td>
+                                                        <td ></td>
+                                                        <td >
+                                                            در مجموع
+                                                            <span class="badge badge-info">
+                                                                {{$valueSum}}
+                                                             </span>
+                                                              کاراکتر
+
+                                                        </td>
+                                                    </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <div class="alert alert-warning">
+                                                    لینکی در سیستم تعریف نشده است
+                                                </div>
+
+                                            @endif
+                                        </div>
+                                    </div>
+
                                     <div class="tab-pane fade" id="packages" role="tabpanel" aria-labelledby="packages-tab">
                                         <div class="table-responsive mt-4">
                                             @if(sizeof($purchased_packages) > 0)
@@ -226,6 +309,7 @@
                                             @endif
                                         </div>
                                     </div>
+
                                     <div class="tab-pane fade" id="customers" role="tabpanel" aria-labelledby="customers-tab">
                                         <div class="table-responsive mt-4">
                                             @if(sizeof($user_customers) > 0)
