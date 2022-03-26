@@ -9,9 +9,9 @@
             <div class="container-fluid">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h4 class="page-title mb-1">تراکنشات موجودی</h4>
+                        <h4 class="page-title mb-1">گاوصندوق</h4>
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item active">ایجاد تراکنش جدید</li>
+                            <li class="breadcrumb-item active">ایجاد فیلد جدید</li>
                         </ol>
                     </div>
                     <div class="col-md-4">
@@ -30,65 +30,41 @@
                     <div class="col-lg-9">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="header-title mb-4">مشخصات تراکنش</h5>
+                                <h5 class="header-title mb-4">مشخصات فیلد</h5>
 
-                                <form action="{{route('admin.transactions.store')}}" method="post" >
+                                <form action="{{route('admin.safes.store')}}" method="post" >
                                     @method('post')
                                     @csrf
 
                                     <div class="form-group row">
-                                        <label for="type" class="col-md-3 col-form-label">
-                                            نوع تراکنش:
+                                        <label for="key" class="col-md-3 col-form-label">
+                                            کلید فیلد (camelCase):
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-md-9">
-                                            <select class="form-control" id="type" name="type" >
-                                                <option   disabled selected>انتخاب کنید...</option>
-                                                <option value="deposit"  {{old('type') == 'deposit' ? 'selected' : null }}  >واریز</option>
-                                                <option value="harvest"  {{old('type') == 'harvest' ? 'selected': null }} >برداشت</option>
-                                            </select>
+                                            <input class="form-control" style="direction: ltr" type="text" id="key" name="key"
+                                                   value="{{old('key')}}" />
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
-                                        <label for="type" class="col-md-3 col-form-label">
-                                            کلید تراکنش:
-                                            <span class="text-danger">*</span>
+                                        <label for="description" class="col-md-3 col-form-label">
+                                            توضیحات فیلد:
                                         </label>
                                         <div class="col-md-9">
-                                            <select class="form-control" id="type" name="key" >
-                                                <option   disabled selected>انتخاب کنید...</option>
-                                                @foreach($keys as $item)
-                                                    <option value="{{$item->key}}"  {{old('key') == $item->key ? 'selected' : null }}  >
-                                                        {{$item->key}}
-                                                        (
-                                                        {{ $item->description }}
-                                                        )
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                            <textarea rows="2" class="form-control" type="text" name="description" id="description"
+                                                    >{!! old('description') !!}</textarea>
                                         </div>
                                     </div>
-
 
                                     <div class="form-group row">
                                         <label for="value" class="col-md-3 col-form-label">
-                                            مقدار به عدد یا قیمت:
+                                            مقدار :
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-md-9">
                                             <input class="form-control" style="direction: ltr" type="text" id="value" name="value"
                                                    value="{{old('value')}}" />
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group row">
-                                        <label for="body" class="col-md-3 col-form-label">
-                                            توضیحات تراکنش:
-                                        </label>
-                                        <div class="col-md-9">
-                                            <textarea rows="2" class="form-control" type="text" name="body" id="body"
-                                                    >{!! old('body') !!}</textarea>
                                         </div>
                                     </div>
 

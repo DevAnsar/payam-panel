@@ -1,18 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\lib\Inventory;
+use App\Models\Safe;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
+    use Inventory;
     /**
      * Display a listing of the resource.
      *
      * @param  Request  $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return
      */
     public function index(Request $request)
     {
@@ -25,7 +28,7 @@ class TransactionController extends Controller
         }else{
             $type='all';
         }
-        $transactions = $transactionsQuery->paginate(10);
+         $transactions = $transactionsQuery->with('safe')->latest()->get();
 
         return view('admin.transactions.index',compact('transactions','type'));
     }
@@ -37,7 +40,8 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        return view('admin.transactions.create');
+        $keys=Safe::query()->select('id','key','description')->get();
+        return view('admin.transactions.create',compact('keys'));
     }
 
     /**
@@ -48,28 +52,36 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
             'type' => 'required',
-            'price' => 'required',
-            'count' => 'required',
+            'key' => 'required',
+            'value' => 'required',
             'body' => 'required|min:10',
         ]);
         try {
 
-            $account_balance = 0;
-            Transaction::create([
+            $transaction = Transaction::create([
                 'type' => $request->input('type'),
-                'price' => $request->input('price'),
-                'count' => $request->input('count'),
+                'key' => $request->input('key'),
+                'value' => $request->input('value'),
                 'body' => $request->input('body'),
-                'account_balance' => $account_balance,
+                'account_balance' => 0,
             ]);
+
+            $account_balance = $this->setInventory($transaction->type,$transaction->key,$transaction->value);
+            if ($account_balance){
+                $transaction->update([
+                    'account_balance' => $account_balance,
+                ]);
+            }
 
             return redirect(route('admin.transactions.index'));
         }catch (\Exception $exception){
             return $exception->getMessage();
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -90,7 +102,8 @@ class TransactionController extends Controller
      */
     public function edit(Transaction $transaction)
     {
-        return view('admin.transactions.edit',compact('transaction'));
+        $keys=Safe::query()->select('id','key','description')->get();
+        return view('admin.transactions.edit',compact('transaction','keys'));
     }
 
     /**

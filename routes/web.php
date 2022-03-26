@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\admin\TransactionController;
+use App\Http\Controllers\admin\SafeController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,7 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
     Route::resource('/medias',MediaController::class);
     Route::resource('/packages',PackageController::class);
     Route::resource('/transactions',TransactionController::class);
+    Route::resource('/safes',SafeController::class);
 });
 
 Auth::routes();

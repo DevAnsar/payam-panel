@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Media;
+use App\Models\Safe;
 use Illuminate\Http\Request;
 
-class MediaController extends Controller
+class SafeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,8 @@ class MediaController extends Controller
      */
     public function index()
     {
-        $medias = Media::all();
-        return view('admin.medias.index',compact('medias'));
+        $safes = Safe::all();
+        return view('admin.safes.index',compact('safes'));
     }
 
     /**
@@ -26,7 +26,7 @@ class MediaController extends Controller
      */
     public function create()
     {
-        return view('admin.medias.create');
+        return view('admin.safes.create');
     }
 
     /**
@@ -38,34 +38,30 @@ class MediaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
-            'base_url' => 'nullable',
-            'icon' => 'nullable',
-            'status' => 'required',
+            'key' => 'required',
+            'value' => 'required',
+            'description' => 'nullable'
         ]);
         try {
-            $icon='';
-            Media::create([
-                'title'=>$request->input('title'),
-                'base_url'=>$request->input('base_url'),
-                'icon'=>$icon,
-                'status'=>$request->input('status')
+            Safe::create([
+                'key'=>$request->input('key'),
+                'value'=>$request->input('value'),
+                'description'=>$request->input('description')
             ]);
 
-            return redirect(route('admin.medias.index'));
+            return redirect(route('admin.safes.index'));
         }catch (\Exception $exception){
             return $exception->getMessage();
         }
-
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Media  $media
+     * @param  \App\Models\Safe  $safe
      * @return \Illuminate\Http\Response
      */
-    public function show(Media $media)
+    public function show(Safe $safe)
     {
         //
     }
@@ -73,46 +69,47 @@ class MediaController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Media  $media
+     * @param  \App\Models\Safe  $safe
      * @return \Illuminate\Http\Response
      */
-    public function edit(Media $media)
+    public function edit(Safe $safe)
     {
-        return view('admin.medias.edit',compact('media'));
+        return view('admin.safes.edit',compact('safe'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Media  $media
+     * @param  \App\Models\Safe  $safe
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Media $media)
+    public function update(Request $request, Safe $safe)
     {
         $request->validate([
-            'title' => 'required',
-            'base_url' => 'nullable',
-            'icon' => 'nullable',
-            'status' => 'required',
+            'value' => 'required',
+            'description' => 'nullable'
         ]);
+        try {
+            $safe->update([
+                'value' => $request->input('value'),
+                'description' => $request->input('description'),
+            ]);
 
-        $media->update($request->all());
-
-        return redirect(route('admin.medias.index'));
+            return redirect(route('admin.safes.index'));
+        }catch (\Exception $exception){
+            return $exception->getMessage();
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Media  $media
+     * @param  \App\Models\Safe  $safe
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Media $media)
+    public function destroy(Safe $safe)
     {
-        $media->delete();
-        return response()->json([
-            'status'=>true
-        ]);
+        //
     }
 }

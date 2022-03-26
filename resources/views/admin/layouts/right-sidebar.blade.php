@@ -39,11 +39,18 @@
                     </a>
                 </li>
 
-                <li class="menu-title">تراکنشات</li>
+                <li class="menu-title">حسابداری</li>
                 <li>
                     <a href="{{route('admin.transactions.index')}}" class=" waves-effect">
                         <div class="d-inline-block icons-sm mr-1"><i class="uim uim-box"></i></div>
                         <span>تراکنشات موجودی</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{route('admin.safes.index')}}" class=" waves-effect">
+                        <div class="d-inline-block icons-sm mr-1"><i class="uim uim-box"></i></div>
+                        <span>گاوصندوق</span>
                     </a>
                 </li>
 

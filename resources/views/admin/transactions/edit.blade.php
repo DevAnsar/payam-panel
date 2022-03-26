@@ -42,33 +42,43 @@
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-md-9">
-                                            <select class="form-control" id="type" name="type" disabled >
+                                            <select class="form-control" id="type" name="type" disabled>
                                                 <option   disabled selected>انتخاب کنید...</option>
-                                                <option value="deposit"  {{ $transaction->type == 'deposit' ? 'selected' : null }}  >واریز</option>
-                                                <option value="harvest"  {{ $transaction->type == 'harvest' ? 'selected': null }} >برداشت</option>
+                                                <option value="deposit"  {{$transaction->type == 'deposit' ? 'selected' : null }}  >واریز</option>
+                                                <option value="harvest"  {{$transaction->type == 'harvest' ? 'selected': null }} >برداشت</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="form-group row">
-                                        <label for="price" class="col-md-3 col-form-label">
-                                            مبلغ تراکنش :
+                                        <label for="type" class="col-md-3 col-form-label">
+                                            کلید تراکنش:
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-md-9">
-                                            <input class="form-control" style="direction: ltr" disabled type="number" id="price" name="price"
-                                                   value="{{$transaction->price}}" />
+                                            <select class="form-control" id="type" name="key" disabled >
+                                                <option   disabled selected>انتخاب کنید...</option>
+                                                @foreach($keys as $item)
+                                                    <option value="{{$item->key}}"  {{ $transaction->key == $item->key ? 'selected' : null }}  >
+                                                        {{$item->key}}
+                                                        (
+                                                        {{ $item->description }}
+                                                        )
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
 
+
                                     <div class="form-group row">
-                                        <label for="count" class="col-md-3 col-form-label">
-                                            پیامک معادل با مبلغ (به عدد):
+                                        <label for="value" class="col-md-3 col-form-label">
+                                            مقدار به عدد یا قیمت:
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-md-9">
-                                            <input class="form-control" disabled style="direction: ltr" type="text" id="count" name="count"
-                                                   value="{{$transaction->count}}" />
+                                            <input class="form-control" disabled style="direction: ltr" type="text" id="value" name="value"
+                                                   value="{{$transaction->value}}" />
                                         </div>
                                     </div>
 

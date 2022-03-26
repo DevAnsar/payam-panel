@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Transaction extends Model
+class Safe extends Model
 {
     use HasFactory,SoftDeletes;
 
@@ -18,13 +18,10 @@ class Transaction extends Model
     protected $fillable = [
         'key',
         'value',
-        'type',
-        'body',
-        'account_balance'
+        'description',
     ];
 
-    public function safe(){
-        return $this->belongsTo(Safe::class,'key','key');
+    public function transactions(){
+        return $this->hasMany(Transaction::class,'key','key');
     }
-
 }

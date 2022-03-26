@@ -68,8 +68,8 @@
                                         <tr>
                                             <th scope="col">ردیف</th>
                                             <th scope="col">آیدی</th>
-                                            <th scope="col">مبلغ</th>
                                             <th scope="col">نوع</th>
+                                            <th scope="col">مقدار</th>
                                             <th scope="col">جهت</th>
                                             <th scope="col">موجودی بعد از این تراکنش</th>
                                             <th scope="col">تنظیمات</th>
@@ -84,10 +84,7 @@
                                             <th scope="row">
                                                 {{$transaction->id}}
                                             </th>
-                                            <td>
-                                                {{number_format($transaction->price)}}
-                                                تومان
-                                            </td>
+
                                             <td>
                                                 @if($transaction->type == 'deposit')
                                                     <div class="badge badge-soft-primary">واریز</div>
@@ -96,11 +93,31 @@
                                                 @else
                                                     <div class="badge badge-soft-danger">نا معلوم</div>
                                                 @endif
+
+                                                    <p>
+                                                        @if($transaction->safe)
+                                                            <a href="{{route('admin.safes.index')}}">
+                                                            <span class="badge badge-soft-info">
+                                                                {{$transaction->safe->key}}
+                                                                (
+                                                                {{$transaction->safe->description}}
+                                                                )
+                                                            </span>
+                                                            </a>
+                                                        @endif
+                                                    </p>
+
                                             </td>
+
+                                            <td>
+                                                {{number_format($transaction->value)}}
+                                            </td>
+
                                             <td>{{$transaction->body}}</td>
                                             <td>
-                                                {{number_format($transaction->account_balance)}}
-                                                تومان
+                                                <span style="direction: ltr" class="badge badge-secondary">
+                                                    {{number_format($transaction->account_balance)}}
+                                                </span>
                                             </td>
 
                                             <td>
