@@ -32,7 +32,7 @@
                             <div class="card-body">
                                 <h5 class="header-title mb-4">مشخصات شبکه</h5>
 
-                                <form action="{{route('admin.packages.update',['package'=>$package])}}" method="post" >
+                                <form action="{{route('admin.packages.update',['package'=>$package])}}" method="post" enctype="multipart/form-data" >
                                     @method('patch')
                                     @csrf
                                     <div class="form-group row">
@@ -79,7 +79,7 @@
                                         </div>
                                         <label for="example-search-input" class="col-md-2 col-form-label"></label>
                                         <div class="col-md-10">
-                                        <img alt="{{$package->title}}" src="{{asset($package->icon)}}" style="max-width: 100px">
+                                            <img style="max-width: 32px" alt="{{$package->title}}" src="{{asset("storage/".$package->icon)}}">
                                         </div>
 
                                     </div>

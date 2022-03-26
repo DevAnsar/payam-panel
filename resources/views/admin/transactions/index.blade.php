@@ -110,14 +110,21 @@
                                             </td>
 
                                             <td>
-                                                {{number_format($transaction->value)}}
+                                                <h4>
+                                                    <span class="badge badge-soft-primary" style="direction: ltr">
+                                                        {{number_format($transaction->value)}}
+                                                    </span>
+                                                </h4>
+
                                             </td>
 
                                             <td>{{$transaction->body}}</td>
                                             <td>
-                                                <span style="direction: ltr" class="badge badge-secondary">
-                                                    {{number_format($transaction->account_balance)}}
-                                                </span>
+                                                <h4>
+                                                    <span class="badge badge-soft-dark" style="direction: ltr">
+                                                          {{number_format($transaction->account_balance)}}
+                                                    </span>
+                                                </h4>
                                             </td>
 
                                             <td>

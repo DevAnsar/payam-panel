@@ -32,7 +32,7 @@
                             <div class="card-body">
                                 <h5 class="header-title mb-4">مشخصات پک</h5>
 
-                                <form action="{{route('admin.packages.store')}}" method="post" >
+                                <form action="{{route('admin.packages.store')}}" method="post" enctype="multipart/form-data">
                                     @method('post')
                                     @csrf
                                 <div class="form-group row">

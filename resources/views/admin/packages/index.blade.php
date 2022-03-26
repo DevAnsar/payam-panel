@@ -63,7 +63,7 @@
                                                 {{$package->id}}
                                             </th>
                                             <td>
-                                                <img alt="{{$package->title}}" src="{{asset($package->icon)}}">
+                                                <img style="max-width: 32px" alt="{{$package->title}}" src="{{asset("storage/".$package->icon)}}">
                                             </td>
                                             <td>{{$package->title}}</td>
                                             <td>{{$package->count}}</td>

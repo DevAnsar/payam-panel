@@ -66,7 +66,13 @@
                                             <td>
                                                 {{$safe->description}}
                                             </td>
-                                            <td>{{$safe->value}}</td>
+                                            <td>
+                                                <h4>
+                                                    <span class="badge badge-soft-primary" style="direction: ltr">
+                                                        {{number_format($safe->value)}}
+                                                    </span>
+                                                </h4>
+                                            </td>
 
                                             <td>
                                                 <div class="btn-group" role="group">

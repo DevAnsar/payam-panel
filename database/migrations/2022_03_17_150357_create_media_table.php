@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('icon')->nullable();
-            $table->string('base_url');
+            $table->string('base_url')->nullable();
             $table->boolean('status')->default(true);
             $table->softDeletes();
             $table->timestamps();

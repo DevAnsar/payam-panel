@@ -59,10 +59,10 @@
                                                 <a href="#">{{$loop->index}}</a>
                                             </th>
                                             <th scope="row">
-                                                <a href="{{route('admin.medias.show',['media'=>$media])}}">{{$media->id}}</a>
+                                                <a  href="{{route('admin.medias.show',['media'=>$media])}}">{{$media->id}}</a>
                                             </th>
                                             <td>
-                                                <img alt="{{$media->title}}" src="{{asset($media->icon)}}">
+                                                <img style="max-width: 32px" alt="{{$media->title}}" src="{{asset("storage/".$media->icon)}}">
                                             </td>
                                             <td>{{$media->title}}</td>
                                             <td>{{$media->base_url}}</td>

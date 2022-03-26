@@ -32,7 +32,7 @@
                             <div class="card-body">
                                 <h5 class="header-title mb-4">مشخصات شبکه</h5>
 
-                                <form action="{{route('admin.medias.update',['media'=>$media])}}" method="post" >
+                                <form action="{{route('admin.medias.update',['media'=>$media])}}" method="post" enctype="multipart/form-data" >
                                     @method('patch')
                                     @csrf
                                     <div class="form-group row">
@@ -63,10 +63,11 @@
                                         </label>
                                         <div class="col-md-10">
                                             <input class="form-control" type="file" name="icon" />
+
                                         </div>
                                         <label for="example-search-input" class="col-md-2 col-form-label"></label>
-                                        <div class="col-md-10">
-                                        <img alt="{{$media->title}}" src="{{asset($media->icon)}}" style="max-width: 100px">
+                                        <div class="col-md-10 mt-2">
+                                            <img style="max-width: 32px" alt="{{$media->title}}" src="{{asset("storage/".$media->icon)}}">
                                         </div>
 
                                     </div>

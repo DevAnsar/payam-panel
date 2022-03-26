@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\lib\FileUploader;
 use App\Models\Media;
 use Illuminate\Http\Request;
 
 class MediaController extends Controller
 {
+    use FileUploader;
     /**
      * Display a listing of the resource.
      *
@@ -44,11 +46,11 @@ class MediaController extends Controller
             'status' => 'required',
         ]);
         try {
-            $icon='';
+            $file = $this->saveFile($request->file('icon'),'images/medias');
             Media::create([
                 'title'=>$request->input('title'),
                 'base_url'=>$request->input('base_url'),
-                'icon'=>$icon,
+                'icon'=> $file != null ? $file : null,
                 'status'=>$request->input('status')
             ]);
 
@@ -97,9 +99,18 @@ class MediaController extends Controller
             'status' => 'required',
         ]);
 
-        $media->update($request->all());
-
-        return redirect(route('admin.medias.index'));
+        try {
+            $file = $this->saveFile($request->file('icon'),'images/medias');
+            $media->update([
+                'title'=>$request->input('title'),
+                'base_url'=>$request->input('base_url'),
+                'icon'=>$file != null ? $file : $media->icon,
+                'status'=>$request->input('status')
+            ]);
+            return redirect(route('admin.medias.index'));
+        }catch (\Exception $exception){
+            return $exception->getMessage();
+        }
     }
 
     /**

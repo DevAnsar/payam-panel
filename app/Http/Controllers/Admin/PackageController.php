@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\lib\FileUploader;
 use App\Models\Package;
 use Illuminate\Http\Request;
 
 class PackageController extends Controller
 {
+    use FileUploader;
     /**
      * Display a listing of the resource.
      *
@@ -45,12 +47,12 @@ class PackageController extends Controller
             'status' => 'required',
         ]);
         try {
-            $icon='';
+            $file = $this->saveFile($request->file('icon'),'images/packages');
             Package::create([
                 'title'=>$request->input('title'),
                 'count'=>$request->input('count'),
                 'price'=>$request->input('price'),
-                'icon'=>$icon,
+                'icon'=>$file != null ? $file : null,
                 'status'=>$request->input('status')
             ]);
 
@@ -100,9 +102,21 @@ class PackageController extends Controller
             'status' => 'required',
         ]);
 
-        $package->update($request->all());
+        try {
+            $file = $this->saveFile($request->file('icon'),'images/packages');
+            $package->update([
+                'title'=>$request->input('title'),
+                'count'=>$request->input('count'),
+                'price'=>$request->input('price'),
+                'icon'=>$file != null ? $file : $package->icon,
+                'status'=>$request->input('status')
+            ]);
 
-        return redirect(route('admin.packages.index'));
+            return redirect(route('admin.packages.index'));
+        }catch (\Exception $exception){
+            return $exception->getMessage();
+        }
+
     }
 
     /**
