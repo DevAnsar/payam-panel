@@ -39,6 +39,14 @@
                     </a>
                 </li>
 
+                <li class="menu-title">تراکنشات</li>
+                <li>
+                    <a href="{{route('admin.transactions.index')}}" class=" waves-effect">
+                        <div class="d-inline-block icons-sm mr-1"><i class="uim uim-box"></i></div>
+                        <span>تراکنشات موجودی</span>
+                    </a>
+                </li>
+
 {{--                <li>--}}
 {{--                    <a href="javascript: void(0);" class="has-arrow waves-effect">--}}
 {{--                        <div class="d-inline-block icons-sm mr-1"><i class="uim uim-comment-message"></i></div>--}}
