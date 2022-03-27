@@ -46,7 +46,10 @@ class MediaController extends Controller
             'status' => 'required',
         ]);
         try {
-            $file = $this->saveFile($request->file('icon'),'images/medias');
+            $file = null;
+            if($request->hasFile('icon')){
+                $file = $this->saveFile($request->file('icon'),'images/medias');
+            }
             Media::create([
                 'title'=>$request->input('title'),
                 'base_url'=>$request->input('base_url'),
@@ -100,7 +103,10 @@ class MediaController extends Controller
         ]);
 
         try {
-            $file = $this->saveFile($request->file('icon'),'images/medias');
+            $file = null;
+            if($request->hasFile('icon')){
+                $file = $this->saveFile($request->file('icon'),'images/medias');
+            }
             $media->update([
                 'title'=>$request->input('title'),
                 'base_url'=>$request->input('base_url'),

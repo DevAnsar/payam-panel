@@ -143,7 +143,7 @@ class SmsIRClient
             $body['SendDateTime'] = $sendDateTime;
         }
         $result = $this->executeRequest('MessageSend', $body);
-        return $json = json_decode($result->getBody()->getContents(), true);
+        $json = json_decode($result->getBody()->getContents(), true);
         $sentMessages = [];
         foreach ($json['Ids'] as $sentMessage) {
             $sentMessages[] = new SentMessage((int)$sentMessage['ID'], (string)$sentMessage['MobileNo']);

@@ -3,19 +3,33 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\v1\MediaCollection;
+use App\Models\Media;
 use App\Models\User;
 use Carbon\Carbon;
+
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+
 
 class UserControllerApi extends Controller
 {
     public function login_send_code(Request $request){
 
-        $request->validate([
-            'mobile' => 'required|size=11'
+//        return $request->all();
+        $validator = Validator::make($request->all(), [
+            'mobile' => 'required|size:11',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'=>false,
+                'messages'=>$validator->messages()
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
         try{
             $user = User::where('mobile', $request->mobile)->first();
@@ -31,7 +45,7 @@ class UserControllerApi extends Controller
             $message = "کد ورود شما :$code";
 
             // Sms : login code to device
-            $this->sender([$user->mobile],$message);
+            $this->sender([$user->mobile],[$message]);
 
             //
             $user->update([
@@ -41,35 +55,103 @@ class UserControllerApi extends Controller
 
             return response()->json([
                 'status'=>true,
-                'message'=>'کد ورود به شماره موبایل ارسال شد'
+                'messages'=>[
+                    'title'=>'کد ورود به شماره موبایل ارسال شد',
+                    'code'=>$code,
+                ]
             ]);
         }catch (\Exception $exception){
             return response()->json([
                 'status'=>false,
-                'message'=>$exception->getMessage()
-            ]);
+                'messages'=>$exception->getMessage()
+            ],Response::HTTP_BAD_REQUEST);
         }
 
     }
 
     public function login_with_mobile(Request $request){
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'mobile' => 'required|size:11',
             'code' => 'required|size:4',
             'device_name' => 'required',
         ]);
-        $user = User::where('mobile', $request->mobile)->first();
 
-        if (! $user ||  $request->code != $user->loginCode ) {
-            throw ValidationException::withMessages([
-                'mobile' => ['اطلاعات ورودی صحیح نمیباشد'],
-            ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status'=>false,
+                'messages'=>$validator->messages()
+            ], Response::HTTP_BAD_REQUEST);
         }
-        if ($user->loginCodeExpire < Carbon::now()){
-            throw ValidationException::withMessages([
-                'code' => ['کد وارد شده منقضی شده است'],
-            ]);
+
+        try{
+            $user = User::where('mobile', $request->mobile)->first();
+
+            if (! $user ||  $request->code != $user->loginCode ) {
+                return response()->json([
+                    'status'=>false,
+                    'messages'=>[
+                        'title' => 'اطلاعات ورودی صحیح نمیباشد'
+                    ]
+                ],Response::HTTP_BAD_REQUEST);
+            }
+            if ($user->loginCodeExpire < Carbon::now()){
+                return response()->json([
+                    'status'=>false,
+                    'messages'=>[
+                        'code' => 'کد وارد شده منقضی شده است'
+                    ]
+                ],Response::HTTP_BAD_REQUEST);
+            }
+
+            // Revoke all tokens...
+//            $user->tokens()->delete();
+
+            return response()->json([
+                'status'=>true,
+                'token'=>$user->createToken($request->device_name)->plainTextToken
+            ],Response::HTTP_OK);
+
+        }catch (\Exception $exception){
+            return response()->json([
+                'status'=>false,
+                'messages'=>$exception->getMessage()
+            ],Response::HTTP_BAD_REQUEST);
         }
-        return $user->createToken($request->device_name)->plainTextToken;
+
+    }
+
+    public function getMySocials(Request $request){
+        try {
+            $user = $request->user();
+            $medias = Media::query()->where('status',true)->get();
+
+            return $this->baseJsonResponse([
+                'medias'=>  new MediaCollection($medias,$user)
+            ],['لیست لینک ها به همراه مقادیر ثبت شده توسط کاربر'],Response::HTTP_OK);
+
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
+
+    }
+
+    public function setMySocials(Request $request){
+        try {
+            $user = $request->user();
+            $res = $this->setUserLink($request->values,$user);
+            if ($res){
+            return $this->baseJsonResponse([
+                'status'=>  true
+            ],['لینک ها ثبت شد'],Response::HTTP_OK);
+            }else{
+                return $this->baseJsonResponse([
+                    'status'=>  false
+                ],['مشکلی در ثبت لینک ها بوجود آمد'],Response::HTTP_BAD_REQUEST);
+            }
+
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
+
     }
 }

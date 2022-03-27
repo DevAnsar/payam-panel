@@ -45,6 +45,7 @@
                                         <tr>
                                             <th scope="col">ردیف</th>
                                             <th scope="col">آیدی کاربر</th>
+                                            <th scope="col">شماره موبایل</th>
                                             <th scope="col">نام</th>
                                             <th scope="col">ایمیل</th>
                                             <th scope="col">وضعیت</th>
@@ -62,6 +63,7 @@
                                             <th scope="row">
                                                 <a href="{{route('admin.users.show',['user'=>$user])}}">{{$user->id}}</a>
                                             </th>
+                                            <td>{{$user->mobile}}</td>
                                             <td>{{$user->name}}</td>
                                             <td>{{$user->email}}</td>
                                             <td>

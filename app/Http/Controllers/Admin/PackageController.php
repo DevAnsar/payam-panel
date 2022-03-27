@@ -47,7 +47,11 @@ class PackageController extends Controller
             'status' => 'required',
         ]);
         try {
-            $file = $this->saveFile($request->file('icon'),'images/packages');
+            $file = null;
+            if($request->hasFile('icon')){
+                $file = $this->saveFile($request->file('icon'),'images/packages');
+            }
+
             Package::create([
                 'title'=>$request->input('title'),
                 'count'=>$request->input('count'),
@@ -103,7 +107,10 @@ class PackageController extends Controller
         ]);
 
         try {
-            $file = $this->saveFile($request->file('icon'),'images/packages');
+            $file = null;
+            if($request->hasFile('icon')){
+                $file = $this->saveFile($request->file('icon'),'images/packages');
+            }
             $package->update([
                 'title'=>$request->input('title'),
                 'count'=>$request->input('count'),

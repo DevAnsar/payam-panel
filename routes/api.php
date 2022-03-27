@@ -20,16 +20,19 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('/users',[SenderController::class,'send']);
+Route::prefix('v1')->group(function (){
 
-Route::post('/login/send_code', [UserControllerApi::class,'login_send_code']);
-Route::post('/login/mobile', [UserControllerApi::class,'login_with_mobile']);
+    Route::post('/login/send_code', [UserControllerApi::class,'login_send_code']);
+    Route::post('/login/mobile', [UserControllerApi::class,'login_with_mobile']);
 
-Route::get('/send',function (){
-    $smsir = new SmsIRClient(env('SMSIR_API_KEY'), env('SMSIR_SECRET_KEY'), env('SMSIR_LINE_NUMBER'));
-    return $smsir->sendVerificationCode('1234','09036587580');
-});
+//    Route::get('/send',function (){
+//        $smsir = new SmsIRClient(env('SMSIR_API_KEY'), env('SMSIR_SECRET_KEY'), env('SMSIR_LINE_NUMBER'));
+//        return $smsir->sendVerificationCode('1234','09036587580');
+//    });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/users/sendSocial',[SenderController::class,'sendSocialToMobile']);
+    Route::group(['middleware' => ['auth:sanctum']],function () {
+        Route::post('/sendSocial',[SenderController::class,'sendSocialToMobile']);
+        Route::get('/my/socials',[UserControllerApi::class,'getMySocials']);
+        Route::post('/my/socials',[UserControllerApi::class,'setMySocials']);
+    });
 });
