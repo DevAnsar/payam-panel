@@ -19,6 +19,7 @@ class Package extends Model
         'title',
         'price',
         'count',
-        'icon'
+        'icon',
+        'status'
     ];
 }

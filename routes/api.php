@@ -34,5 +34,7 @@ Route::prefix('v1')->group(function (){
         Route::post('/sendSocial',[SenderController::class,'sendSocialToMobile']);
         Route::get('/my/socials',[UserControllerApi::class,'getMySocials']);
         Route::post('/my/socials',[UserControllerApi::class,'setMySocials']);
+        Route::get('/packages',[UserControllerApi::class,'getPackages']);
+        Route::get('/sent_box',[UserControllerApi::class,'getSentBox']);
     });
 });

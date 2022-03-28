@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\MediaCollection;
+use App\Http\Resources\v1\PackageCollection;
+use App\Http\Resources\v1\SentBoxCollection;
 use App\Models\Media;
+use App\Models\Package;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -153,5 +156,30 @@ class UserControllerApi extends Controller
             return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }
 
+    }
+
+    public function getPackages(){
+        try {
+            $packages = Package::query()->where('status',true)->get();
+            return $this->baseJsonResponse([
+                'status'=>  true,
+                'packages'=>new PackageCollection($packages)
+            ],['لیست پک های پیامکی'],Response::HTTP_OK);
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function getSentBox(Request $request){
+        try {
+            $user = $request->user();
+            $user_sent_box = $user->user_sends()->latest()->get();
+            return $this->baseJsonResponse([
+                'status'=>  true,
+                'sent_box'=>new SentBoxCollection($user_sent_box)
+            ],['لیست آخرین ارسال ها'],Response::HTTP_OK);
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
     }
 }
