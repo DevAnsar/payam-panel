@@ -47,35 +47,17 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group row">
-                                    <label for="example-search-input" class="col-md-2 col-form-label">
-                                        قیمت:
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="col-md-10">
-                                        <input class="form-control" style="direction: ltr" type="text" name="price"
-                                               value="{{old('price')}}" />
-                                    </div>
-                                </div>
-
-                                    <div class="form-group row">
-                                        <label for="example-search-input" class="col-md-2 col-form-label">
-                                            تعداد:
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="col-md-10">
-                                            <input class="form-control" style="direction: ltr" type="number" name="count"
-                                                   value="{{old('count')}}" />
-                                        </div>
-                                    </div>
+                                <package-sms-count
+                                        default_count="{{old('count')}}"
+                                        sms_tariff="{{$smsTariff}}"
+                                ></package-sms-count>
 
                                 <div class="form-group row">
                                     <label for="example-search-input" class="col-md-2 col-form-label">
                                         آیکون:
                                     </label>
                                     <div class="col-md-10">
-                                        <input class="form-control" type="file" name="icon"
-                                               value="{{old('icon')}}" />
+                                        <input class="form-control" type="file" name="icon" />
                                     </div>
                                 </div>
 

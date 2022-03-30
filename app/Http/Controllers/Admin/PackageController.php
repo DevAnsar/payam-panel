@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\lib\FileUploader;
+use App\lib\SafeSettings;
 use App\Models\Package;
 use Illuminate\Http\Request;
 
 class PackageController extends Controller
 {
-    use FileUploader;
+    use FileUploader,SafeSettings;
     /**
      * Display a listing of the resource.
      *
@@ -17,8 +18,10 @@ class PackageController extends Controller
      */
     public function index()
     {
-        $packages = Package::all();
-        return view('admin.packages.index',compact('packages'));
+        $packages = Package::query()->get();
+        $smsTariff= $this->getSmsTariff();
+
+        return view('admin.packages.index',compact('packages','smsTariff'));
     }
 
     /**
@@ -28,7 +31,8 @@ class PackageController extends Controller
      */
     public function create()
     {
-        return view('admin.packages.create');
+        $smsTariff= $this->getSmsTariff();
+        return view('admin.packages.create',compact('smsTariff'));
     }
 
     /**
@@ -39,10 +43,10 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
+//        return $request->all();
         $request->validate([
             'title' => 'required',
             'count' => 'required',
-            'price' => 'required',
             'icon' => 'nullable',
             'status' => 'required',
         ]);
@@ -55,7 +59,6 @@ class PackageController extends Controller
             Package::create([
                 'title'=>$request->input('title'),
                 'count'=>$request->input('count'),
-                'price'=>$request->input('price'),
                 'icon'=>$file != null ? $file : null,
                 'status'=>$request->input('status')
             ]);
@@ -85,8 +88,8 @@ class PackageController extends Controller
      */
     public function edit(Package $package)
     {
-
-        return view('admin.packages.edit',compact('package'));
+        $smsTariff= $this->getSmsTariff();
+        return view('admin.packages.edit',compact('package','smsTariff'));
     }
 
     /**
@@ -101,7 +104,6 @@ class PackageController extends Controller
         $request->validate([
             'title' => 'required',
             'count' => 'required',
-            'price' => 'required',
             'icon' => 'nullable',
             'status' => 'required',
         ]);
@@ -114,7 +116,6 @@ class PackageController extends Controller
             $package->update([
                 'title'=>$request->input('title'),
                 'count'=>$request->input('count'),
-                'price'=>$request->input('price'),
                 'icon'=>$file != null ? $file : $package->icon,
                 'status'=>$request->input('status')
             ]);

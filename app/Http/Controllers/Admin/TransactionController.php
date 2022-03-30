@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\lib\Inventory;
+use App\lib\SafeSettings;
 use App\Models\Safe;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    use Inventory;
+    use SafeSettings;
     /**
      * Display a listing of the resource.
      *
@@ -69,7 +69,7 @@ class TransactionController extends Controller
                 'account_balance' => 0,
             ]);
 
-            $account_balance = $this->setInventory($transaction->type,$transaction->key,$transaction->value);
+            $account_balance = $this->setSafe($transaction->type,$transaction->key,$transaction->value);
             if ($account_balance){
                 $transaction->update([
                     'account_balance' => $account_balance,

@@ -36,6 +36,5 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
 });
 
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/',function (){return view('welcome');});
+Route::get('/',function (){return view('web.welcome');});
 

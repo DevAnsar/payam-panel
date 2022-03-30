@@ -47,28 +47,10 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group row">
-                                        <label for="example-search-input" class="col-md-2 col-form-label">
-                                            قیمت:
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="col-md-10">
-                                            <input class="form-control" style="direction: ltr" type="text" name="price"
-                                                   value="{{$package->price}}" />
-                                        </div>
-                                    </div>
-
-
-                                    <div class="form-group row">
-                                        <label for="example-search-input" class="col-md-2 col-form-label">
-                                            تعداد:
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="col-md-10">
-                                            <input class="form-control" style="direction: ltr" type="number" name="count"
-                                                   value="{{$package->count}}" />
-                                        </div>
-                                    </div>
+                                    <package-sms-count
+                                            default_count="{{$package->count}}"
+                                            sms_tariff="{{$smsTariff}}"
+                                    ></package-sms-count>
 
                                     <div class="form-group row">
                                         <label for="example-search-input" class="col-md-2 col-form-label">

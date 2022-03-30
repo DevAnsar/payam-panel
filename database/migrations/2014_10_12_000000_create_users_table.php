@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('loginCode')->nullable();
             $table->timestamp('loginCodeExpire')->nullable();
             $table->string('email')->unique()->nullable();
-            $table->string('basketCount')->default('0');
+            $table->string('account_balance')->default('0');
             $table->string('usedCount')->default('0');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

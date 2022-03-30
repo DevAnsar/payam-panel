@@ -22,7 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'basketCount',
+        'account_balance',
         'usedCount',
         'mobile',
         'loginCode',

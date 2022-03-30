@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('price');
             $table->unsignedInteger('count')->default(0);
             $table->string('icon')->nullable();
             $table->boolean('status')->default(true);

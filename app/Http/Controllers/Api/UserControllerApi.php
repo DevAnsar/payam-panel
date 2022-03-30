@@ -28,10 +28,7 @@ class UserControllerApi extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status'=>false,
-                'messages'=>$validator->messages()
-            ], Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse([],$validator->messages(), Response::HTTP_BAD_REQUEST);
         }
 
         try{
@@ -119,6 +116,54 @@ class UserControllerApi extends Controller
                 'status'=>false,
                 'messages'=>$exception->getMessage()
             ],Response::HTTP_BAD_REQUEST);
+        }
+
+    }
+
+    public function getMyDetails(Request $request){
+        try {
+            $user = $request->user();
+            return $this->baseJsonResponse([
+                'user'=>  $user
+            ],['مشخصات کاربر'],Response::HTTP_OK);
+
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
+
+    }
+
+    public function setMyDetails(Request $request){
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'nullable',
+                'email' => 'nullable',
+                'title' => 'nullable',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->baseJsonResponse([],$validator->messages(), Response::HTTP_BAD_REQUEST);
+            }
+
+            $user = $request->user();
+            $update=$user->update([
+                'name'=>$request->name,
+                'title'=>$request->title,
+                'email'=>$request->email
+            ]);
+            if ($update){
+                return $this->baseJsonResponse([
+                    'status'=>  true
+                ],['مشخصات با موفقیت ثبت شد'],Response::HTTP_OK);
+            }else{
+                return $this->baseJsonResponse([
+                    'status'=>  false
+                ],['مشکلی در ویرایش مشخصات بوجود آمد'],Response::HTTP_BAD_REQUEST);
+            }
+
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }
 
     }

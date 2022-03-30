@@ -48,7 +48,13 @@
                                             <th scope="col">آیکون</th>
                                             <th scope="col">عنوان</th>
                                             <th scope="col">تعداد پیامک</th>
-                                            <th scope="col">قیمت</th>
+                                            <th scope="col">
+                                                قیمت
+                                            (
+                                                با تعرفه
+                                                {{$smsTariff}}
+                                                ریال)
+                                            </th>
                                             <th scope="col">وضعیت</th>
                                             <th scope="col">تنظیمات</th>
                                         </tr>
@@ -68,8 +74,8 @@
                                             <td>{{$package->title}}</td>
                                             <td>{{$package->count}}</td>
                                             <td>
-                                                {{number_format($package->price)}}
-                                                تومان
+                                                {{number_format($package->count * $smsTariff)}}
+                                                ریال
                                             </td>
                                             <td>
                                                 @if($package->status)
