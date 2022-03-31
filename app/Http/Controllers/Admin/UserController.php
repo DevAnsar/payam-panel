@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\lib\SafeSettings;
 use App\Models\Media;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    use SafeSettings;
     /**
      * Display a listing of the resource.
      *
@@ -70,6 +72,7 @@ class UserController extends Controller
         $mediasResponse = $this->getMediasWithUserData($user);
         $valueSum = $mediasResponse['valueSum'];
         $medias = $mediasResponse['medias'];
+        $smsTariff = $this->getSmsTariff();
 
 //        return $medias;
         return view('admin.users.show',compact(
@@ -78,7 +81,8 @@ class UserController extends Controller
             'purchased_packages',
             'user_customers',
             'user_sends',
-            'medias'
+            'medias',
+            'smsTariff'
         ));
     }
 
@@ -153,7 +157,7 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(User $user)
     {

@@ -9,22 +9,21 @@ use App\lib\SMSIR\Responses\SMSLine;
 use Psr\Http\Message\ResponseInterface;
 use App\lib\SMSIR\Responses\Message;
 use GuzzleHttp\Exception\GuzzleException;
-use App\lib\SMSIR\Responses\SentMessage;
-
-use App\lib\SMSIR\Responses\CreditResponse;
 use App\lib\SMSIR\Responses\ReceivedMessage;
 
-use App\lib\SMSIR\Responses\SentMessagesResponse;
-use App\lib\SMSIR\Responses\VerificationCodeResponse;
-use App\lib\SMSIR\Responses\ReceivedMessagesResponse;
+//use App\lib\SMSIR\Responses\SentMessagesResponse;
+//use App\lib\SMSIR\Responses\VerificationCodeResponse;
+//use App\lib\SMSIR\Responses\ReceivedMessagesResponse;
+//use App\lib\SMSIR\Responses\SentMessage;
+//use App\lib\SMSIR\Responses\CreditResponse;
 
 class SmsIRClient
 {
-    private $userApiKey;
-    private $secretKey;
-    private $token;
-    private $lineNumber;
-    private $client;
+    private string $userApiKey;
+    private string $secretKey;
+    private string $token;
+    private string $lineNumber;
+    private Client $client;
 
     /**
      * Create a new SMSIR Instance
@@ -41,7 +40,7 @@ class SmsIRClient
         $this->lineNumber = $lineNumber;
 
         $this->client = new Client([
-            'base_uri' => 'https://RestfulSms.com/api/',
+            'base_uri' => 'http://RestfulSms.com/api/',
             'timeout' => $timeout,
         ]);
     }
@@ -49,14 +48,18 @@ class SmsIRClient
     /**
      * this method return your credit in sms.ir (sms credit, not money)
      *
-     * @return CreditResponse
+     * @return array
      * @throws GuzzleException
      */
-    public function smsCredit(): CreditResponse
+    public function smsCredit()
     {
         $result = $this->executeRequest('credit');
         $json = json_decode($result->getBody()->getContents(), true);
-        return new CreditResponse($json['IsSuccessful'], $json['Message'], $json['Credit']);
+        return [
+            'isSuccessful'=>$json['IsSuccessful'],
+            'message'=>$json['Message'],
+            'credit'=>$json['Credit']
+        ];
     }
 
     /**
@@ -89,7 +92,7 @@ class SmsIRClient
      * @return string
      * @throws GuzzleException
      */
-    public function getToken(): string
+    private function getToken()
     {
         $body = [
             'UserApiKey' => $this->userApiKey,
@@ -104,7 +107,7 @@ class SmsIRClient
     /**
      * by this method you can fetch all of your sms lines.
      *
-     * @return
+     * @return array
      * @throws GuzzleException
      */
     public function getSMSLines()
@@ -115,12 +118,11 @@ class SmsIRClient
         foreach ($json['SMSLines'] as $SMSLine) {
             $lineArray[] = new SMSLine((int)$SMSLine['ID'], (string)$SMSLine['LineNumber']);
         }
-
-        return  response()->json([
+        return [
             'isSuccessful'=>$json['IsSuccessful'],
             'message'=> $json['Message'],
             'SMSLines'=>$lineArray
-        ]);
+        ];
     }
 
     /**
@@ -145,16 +147,22 @@ class SmsIRClient
         $result = $this->executeRequest('MessageSend', $body);
         $json = json_decode($result->getBody()->getContents(), true);
         $sentMessages = [];
-        foreach ($json['Ids'] as $sentMessage) {
-            $sentMessages[] = new SentMessage((int)$sentMessage['ID'], (string)$sentMessage['MobileNo']);
+        if ($json['Ids'] != null ){
+            foreach ($json['Ids'] as $sentMessage) {
+                $sentMessages[] = [
+                    'id'=>(int)$sentMessage['ID'],
+                    'mobileNumber'=>(string)$sentMessage['MobileNo']
+                ];
+//                $sentMessages[] = new SentMessage((int)$sentMessage['ID'], (string)$sentMessage['MobileNo']);
+            }
         }
 
-        return  response()->json([
+        return [
             'isSuccessful'=>$json['IsSuccessful'],
             'message'=> $json['Message'],
             'batchKey'=>$json['BatchKey'],
-            'sentMessages' =>$sentMessages
-        ]);
+            'sentMessages' =>$sentMessages,
+        ];
 
     }
 
@@ -174,22 +182,22 @@ class SmsIRClient
         ];
         $result = $this->executeRequest('VerificationCode', $body);
         $json = json_decode($result->getBody()->getContents(), true);
-        return new VerificationCodeResponse(
-            $json['IsSuccessful'],
-            $json['Message'],
-            (string)$json['VerificationCodeId']
-        );
+        return [
+            "isSuccessful"=>$json['IsSuccessful'],
+            "message"=>$json['Message'],
+            "verificationCodeId"=>(string)$json['VerificationCodeId']
+        ];
     }
 
 
     /**
-     * @param array $parameters
-     * @param string $templateId
-     * @param string $mobileNumber
-     * @return VerificationCodeResponse
+     * @param  array  $parameters
+     * @param  string  $templateId
+     * @param  string  $mobileNumber
+     * @return array
      * @throws GuzzleException
      */
-    public function ultraFastSend(array $parameters, string $templateId, string $mobileNumber): VerificationCodeResponse
+    public function ultraFastSend(array $parameters, string $templateId, string $mobileNumber)
     {
         $params = [];
         foreach ($parameters as $key => $value) {
@@ -202,24 +210,24 @@ class SmsIRClient
         ];
         $result = $this->executeRequest('UltraFastSend', $body);
         $json = json_decode($result->getBody()->getContents(), true);
-        return new VerificationCodeResponse(
-            $json['IsSuccessful'],
-            $json['Message'],
-            (string)$json['VerificationCodeId']
-        );
+        return [
+            "isSuccessful"=>$json['IsSuccessful'],
+            "message"=>$json['Message'],
+            "verificationCodeId"=>(string)$json['VerificationCodeId']
+        ];
     }
 
     /**
      * this method used for fetch your sent messages
      *
-     * @param $fromDate = from date (example: 1399/06/01)
-     * @param $toDate = to date (example: 1399/08/25)
-     * @param int $pageNumber = the page number
-     * @param int $perPage = how many sms you want to fetch in every page
-     * @return SentMessagesResponse
+     * @param $fromDate  = from date (example: 1399/06/01)
+     * @param $toDate  = to date (example: 1399/08/25)
+     * @param  int  $pageNumber  = the page number
+     * @param  int  $perPage  = how many sms you want to fetch in every page
+     * @return array
      * @throws GuzzleException
      */
-    public function getSentMessages($fromDate, $toDate, int $pageNumber = 1, int $perPage = 100): SentMessagesResponse
+    public function getSentMessages($fromDate, $toDate, int $pageNumber = 1, int $perPage = 100)
     {
         $result = $this->executeRequest("MessageSend?Shamsi_FromDate=$fromDate&Shamsi_ToDate=$toDate&RowsPerPage=$perPage&RequestedPageNumber=$pageNumber");
         $json = json_decode($result->getBody()->getContents(), true);
@@ -239,31 +247,30 @@ class SmsIRClient
                 (bool)$message['IsError'],
             );
         }
-        return new SentMessagesResponse(
-            (bool)$json['IsSuccessful'],
-            $json['Message'],
-            (int)$json['CountOfAll'],
-            $messages
-        );
+        return [
+            "isSuccessful"=>(bool)$json['IsSuccessful'],
+            "message"=>$json['Message'],
+            "countOfAll"=>(int)$json['CountOfAll'],
+            "messages"=>$messages
+        ];
     }
 
     /**
      * this method used for fetch received messages
      *
-     * @param $fromDate = from date (example: 1399/06/01)
-     * @param $toDate = to date (example: 1399/08/25)
-     * @param int $pageNumber = the page number
-     * @param int $perPage = how many sms you want to fetch in every page
-     * @return ReceivedMessagesResponse
+     * @param $fromDate  = from date (example: 1399/06/01)
+     * @param $toDate  = to date (example: 1399/08/25)
+     * @param  int  $pageNumber  = the page number
+     * @param  int  $perPage  = how many sms you want to fetch in every page
+     * @return array
      * @throws GuzzleException
-     *
      */
     public function getReceivedMessages(
         $fromDate,
         $toDate,
         int $pageNumber = 1,
         int $perPage = 100
-    ): ReceivedMessagesResponse {
+    ) {
         $result = $this->executeRequest("ReceiveMessage?Shamsi_FromDate=$fromDate&Shamsi_ToDate=$toDate&RowsPerPage=$perPage&RequestedPageNumber=$pageNumber");
         $json = json_decode($result->getBody()->getContents(), true);
         $messages = [];
@@ -278,11 +285,11 @@ class SmsIRClient
                 (string)$message['ReceiveDateTime']
             );
         }
-        return new ReceivedMessagesResponse(
-            (bool)$json['IsSuccessful'],
-            $json['Message'],
-            (int)$json['CountOfAll'],
-            $messages
-        );
+        return [
+            "isSuccessful"=>(bool)$json['IsSuccessful'],
+            "message"=>$json['Message'],
+            "countOfAll"=>(int)$json['CountOfAll'],
+            "receivedMessage"=>$messages
+        ];
     }
 }

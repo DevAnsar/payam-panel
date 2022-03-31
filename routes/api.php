@@ -25,12 +25,14 @@ Route::prefix('v1')->group(function (){
     Route::post('/login/mobile', [UserControllerApi::class,'login_with_mobile']);
 
     Route::group(['middleware' => ['auth:sanctum']],function () {
-        Route::post('/sendSocial',[SenderController::class,'sendSocialToMobile']);
-        Route::get('/my/details',[UserControllerApi::class,'getMyDetails']);
-        Route::post('/my/details',[UserControllerApi::class,'setMyDetails']);
-        Route::get('/my/socials',[UserControllerApi::class,'getMySocials']);
-        Route::post('/my/socials',[UserControllerApi::class,'setMySocials']);
+        Route::post('/send',[SenderController::class,'sendSocialToMobile']);
+        Route::prefix('my')->group(function () {
+            Route::get('details',[UserControllerApi::class,'getMyDetails']);
+            Route::post('details',[UserControllerApi::class,'setMyDetails']);
+            Route::get('socials',[UserControllerApi::class,'getMySocials']);
+            Route::post('socials',[UserControllerApi::class,'setMySocials']);
+            Route::get('sent_box',[UserControllerApi::class,'getSentBox']);
+        });
         Route::get('/packages',[UserControllerApi::class,'getPackages']);
-        Route::get('/sent_box',[UserControllerApi::class,'getSentBox']);
     });
 });

@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 
 class UserControllerApi extends Controller
@@ -45,7 +44,7 @@ class UserControllerApi extends Controller
             $message = "کد ورود شما :$code";
 
             // Sms : login code to device
-            $this->sender([$user->mobile],[$message]);
+//            $this->sender([$user->mobile],[$message]);
 
             //
             $user->update([

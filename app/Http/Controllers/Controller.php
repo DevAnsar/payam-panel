@@ -17,8 +17,8 @@ class Controller extends BaseController
     private $protocol ='SMSIR';
 
     /**
-     * @param array $mobiles
-     * @param string $message
+     * @param  array  $mobiles
+     * @param $messages
      * @return array
      */
     public function sender($mobiles , $messages){
@@ -27,15 +27,21 @@ class Controller extends BaseController
 
             if($this->protocol == 'KAVE_NEGAR'){
                 $sender=new KaveNegarController();
-                return $sender->sendSmsFromKaveNegar($mobiles,$messages[0]);
+                $res = $sender->sendSmsFromKaveNegar($mobiles,$messages[0]);
+                return [
+                    'isSuccessful'=>$res['isSuccessful']
+                ];
             }elseif($this->protocol == 'SMSIR'){
-
-                $apiKey = getenv('API_KEY');
-                $secretKey = getenv('SECRET_KEY');
-                $lineNumber = getenv('LINE_NUMBER');
-
+                $apiKey = env('SMSIR_API_KEY');
+                $secretKey = env('SMSIR_SECRET_KEY');
+                $lineNumber = env('SMSIR_LINE_NUMBER');
                 $smsir = new SmsIRClient($apiKey, $secretKey, $lineNumber);
-                return $res = $smsir->send($messages, $mobiles);
+                $res = $smsir->send($messages, $mobiles);
+
+                return [
+                  'isSuccessful'=>$res['isSuccessful'],
+                    'data'=>$res
+                ];
             }
 
         }catch (\GuzzleHttp\Exception\GuzzleException $e) {
@@ -151,5 +157,28 @@ class Controller extends BaseController
             return false;
         }
 
+    }
+
+    /**
+     * @param  string  $message
+     * @return integer
+     */
+    public function getMessageContentCount($message){
+        $message_length = strlen($message);
+        if ($message_length > 0){
+            if ($message_length - 70 <= 0){
+                return 1;
+            }else{
+                $message_length -= 70;
+                if ($message_length - 64 <= 0){
+                    return 2;
+                }else{
+                    $message_length -= 64;
+                    return ceil($message_length / 67) + 2;
+                }
+            }
+        }
+
+        return 0;
     }
 }

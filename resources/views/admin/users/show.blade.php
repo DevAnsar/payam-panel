@@ -37,7 +37,7 @@
 
                                         <h6 class="card-subtitle font-14 text-muted">
                                             موجودی اکانت :
-                                            <span>{{$user->basketCount}}</span>
+                                            <span>{{$user->account_balance / $smsTariff}}</span>
                                             عدد
                                         </h6>
                                     </div>

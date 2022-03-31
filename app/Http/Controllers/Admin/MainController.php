@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Package;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class MainController extends Controller
