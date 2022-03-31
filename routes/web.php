@@ -34,6 +34,8 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
     Route::resource('/transactions',TransactionController::class);
     Route::resource('/safes',SafeController::class);
 });
+Route::get('/getBuyPackages/{package}',[MainController::class,'getBuyPackage'])->middleware('auth:sanctum');
+Route::get('/getVerifyBuyPackages/{payment}',[MainController::class,'getVerifyBuyPackage'])->name('zp.buy_package.verify');
 
 Auth::routes();
 Route::get('/',function (){return view('web.welcome');});

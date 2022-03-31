@@ -284,6 +284,7 @@
                                                         <th scope="col">عنوان</th>
                                                         <th scope="col">تعداد</th>
                                                         <th scope="col">مبلغ</th>
+                                                        <th scope="col">در تاریخ</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -293,9 +294,16 @@
                                                             <th scope="row">
                                                                 <a href="#">{{$loop->index}}</a>
                                                             </th>
-                                                            <td>{{$purchased_package->title}}</td>
+                                                            <td>{{$purchased_package->description}}</td>
                                                             <td>{{$purchased_package->count}}</td>
-                                                            <td>{{$purchased_package->price}}</td>
+                                                            <td>
+                                                                {{number_format($purchased_package->price)}}
+                                                                ریال
+                                                            </td>
+                                                            <td>
+                                                                {{$purchased_package->created_at}}
+
+                                                            </td>
                                                         </tr>
                                                     @endforeach
 

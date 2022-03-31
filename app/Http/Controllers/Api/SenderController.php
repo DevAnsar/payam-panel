@@ -36,25 +36,47 @@ class SenderController extends Controller
                 $medias = $mediasResponse['medias'];
 
                 $links = $this->createLinksMessageWithUserMedias($medias);
-                $links = $this->addAdToMessage($links);
+                $message = $user->name ."\n".$links;
+                $message = $this->addAdToMessage($message);
                 $smsTariff = $this->getSmsTariff();
-                $contentCount = $this->getMessageContentCount($links);
+                $contentCount = $this->getMessageContentCount($message);
 
-                return $smsTariff * $contentCount * 2.2;
-//                $result = $this->sender([$mobile],[$links]);
-//                if ($result['isSuccessful']){
-//
-//                    return $this->baseJsonResponse([
-//                        'status'=>true,
-//                        'message'=>$links,
-//                        'message_len'=>strlen($links),
-//                        'data'=>$result['data']
-//                    ],['لینک ها با موفقیت ارسال شد'],Response::HTTP_OK);
-//
-//
-//                }else{
-//                    return $this->baseJsonResponse(['status'=>false],['مشکلی از طرف سرویس دهنده به وجود آمد'],Response::HTTP_BAD_REQUEST);
-//                }
+                $price = $smsTariff * $contentCount;
+
+                if ($user->account_balance >= $price){
+                    $result = $this->sender([$mobile],[$message]);
+                    if ($result['isSuccessful']){
+
+                        $user->update([
+                            'usedCount' => $user->usedCount + $contentCount,
+                            'account_balance' => $user->account_balance - $price
+                        ]);
+                        $user->user_sends()->create([
+                            'mobile'=>$mobile,
+                            'text'=>$message
+                        ]);
+                        if ($user->addMobileToCustomers){
+                            if (! $user->user_customers()->where('mobile',$mobile)->first()){
+                                $user->user_customers()->create([
+                                    'mobile'=>$mobile
+                                ]);
+                            }
+                        }
+                        return $this->baseJsonResponse([
+                            'status'=>true,
+                            'message'=>$message,
+                            'message_len'=>strlen($message),
+                            'data'=>$result['data']
+                        ],['لینک ها با موفقیت ارسال شد'],Response::HTTP_OK);
+
+
+                    }
+                    else{
+                        return $this->baseJsonResponse(['status'=>false],['مشکلی از طرف سرویس دهنده به وجود آمد'],Response::HTTP_BAD_REQUEST);
+                    }
+                }else{
+                    return $this->baseJsonResponse(['status'=>false],['موجودی حساب برای ارسال پیامک کافی نمیباشد'],Response::HTTP_BAD_REQUEST);
+                }
 
             }else{
                 return $this->baseJsonResponse(['status'=>false],['کاربر یافت نشد'],Response::HTTP_BAD_REQUEST);

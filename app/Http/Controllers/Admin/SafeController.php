@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\lib\SMSIR\SmsIRClient;
 use App\Models\Safe;
 use Illuminate\Http\Request;
 
@@ -12,11 +13,20 @@ class SafeController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function index()
     {
         $safes = Safe::all();
-        return view('admin.safes.index',compact('safes'));
+
+        $apiKey = env('SMSIR_API_KEY');
+        $secretKey = env('SMSIR_SECRET_KEY');
+        $lineNumber = env('SMSIR_LINE_NUMBER');
+
+        $smsClient = new SmsIRClient($apiKey,$secretKey,$lineNumber);
+        $smsCredit = $smsClient->smsCredit()['credit'];
+
+        return view('admin.safes.index',compact('safes','smsCredit'));
     }
 
     /**

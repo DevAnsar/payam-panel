@@ -14,7 +14,9 @@
         "laravel/ui": "^3.4",
         "livewire/livewire": "^2.10",
         "twbs/bootstrap": "4.0.0",
-      "ext-json": "*"
+        "ext-json": "*",
+        "ext-soap": "*",
+        "ext-curl": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

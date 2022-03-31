@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\lib\SafeSettings;
 use App\lib\SMSIR\SmsIRClient;
+use App\lib\Zarinpal\Zarinpal;
 use App\Models\Media;
+use App\Models\Package;
+use App\Models\Payment;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests,SafeSettings;
     private $protocol ='SMSIR';
 
     /**
@@ -180,5 +186,203 @@ class Controller extends BaseController
         }
 
         return 0;
+    }
+
+
+    /**
+     * @param $price
+     * @param $callback
+     * @param  string  $description
+     * @param  string  $email
+     * @param  string  $mobile
+     * @param  bool  $SandBox
+     * @param  bool  $ZarinGate
+     */
+    public function getPay($price,$callback,$description="تراکنش زرین پال",$email="",$mobile="",$SandBox = false,$ZarinGate =false){
+
+        $MerchantID 	= env('ZP_MerchantID');
+        $Amount 		= $price;
+        $Description 	= $description;
+        $Email 			= $email;
+        $Mobile 		= $mobile;
+        $CallbackURL 	= $callback;
+
+        $zp 	= new Zarinpal($MerchantID);
+        $result = $zp->request($Amount, $Description, $Email, $Mobile, $CallbackURL, $SandBox, $ZarinGate);
+
+        if (isset($result["Status"]) && $result["Status"] == 100)
+        {
+            // Success and redirect to pay
+            $zp->redirect($result["StartPay"]);
+        } else {
+            // error
+//            return $result;
+            echo "خطا در ایجاد تراکنش";
+            echo "<br />کد خطا : ". $result["Status"];
+            echo "<br />تفسیر و علت خطا : ". $result["Message"];
+        }
+
+    }
+
+    /**
+     * @throws \SoapFault
+     */
+    public function getVerify($price , $au ,$SandBox = true ,$ZarinGate = false){
+
+        $MerchantID 	= env('ZP_MerchantID');
+        $Amount 		= $price;
+
+        $zp 	= new Zarinpal($MerchantID);
+        $result = $zp->verify($Amount ,$au, $SandBox, $ZarinGate);
+
+        return [
+            'status'=>isset($result["Status"]) ? $result["Status"] : -1,
+            'ref_id'=>$result["RefID"],
+            'authority'=>$result["Authority"],
+            'amount'=>$result["Amount"],
+            'message'=>$result["Message"]
+        ];
+    }
+
+    public function getBuyPackage(Package $package,Request $request){
+        $user = $request->user();
+        $price = $this->payPriceCalculator($package->count,'T');
+        $payment = $user->payments()->create([
+            'price' => $price,
+            'price_type' => "T",
+            'package_id'=>$package->id,
+            'mobile'=>$user->mobile,
+            'email'=> $user->email
+        ]);
+
+        if ($payment){
+            return $this->getPay(
+                $price,
+                route('zp.buy_package.verify',['payment'=>$payment->id]),
+                "خرید ".$package->title ,
+                $user->email||"",
+                $user->mobile||"",
+                true
+            );
+        }else{
+            echo 'payment err';
+        }
+    }
+
+    public function getVerifyBuyPackage(Payment $payment , Request $request){
+        $au = ($request->has("Authority") && $request->input("Authority") != "") ? $request->input("Authority") :"";
+        $payment->update([
+            'authority' => $au
+        ]);
+        $res = $this->getVerify(
+            $payment->price,
+            $au,
+            true
+        );
+
+        $user = $payment->user;
+        $price_calculated = $this->purePriceCalculator($res['amount'],$payment->price_type,"R");
+        if ( $res["status"] == 100)
+        {
+
+            //1- update payment
+            $payment->update([
+                'ref_id'=> $res['ref_id'],
+                'status'=> 'Paid'
+            ]);
+
+            //2- add package to user packages
+            $user->user_packages()->create([
+                'package_id'=> $payment->package_id,
+                'price'=> $price_calculated['user_price'],
+                'count'=> $payment->package->count,
+                'description'=>$payment->package->title,
+            ]);
+
+            //3- update user account balance
+            $user->update([
+                'account_balance' => $user->account_balance + $price_calculated['user_price']
+            ]);
+
+            //4- deposit commission to site account
+            $user_transaction = Transaction::create([
+                'type' => 'deposit',
+                'key' => 'monyInventory',
+                'value' => $price_calculated['user_price'],
+                'body' => 'خرید'.$payment->package->title,
+                'account_balance' => "0",
+            ]);
+
+            $user_buy_set_safe = $this->setSafe($user_transaction->type,$user_transaction->key,$user_transaction->value);
+            if ($user_buy_set_safe){
+                $user_transaction->update([
+                    'account_balance' => (string)$user_buy_set_safe,
+                ]);
+            }
+
+            $site_transaction = Transaction::create([
+                'type' => 'deposit',
+                'key' => 'commissionInventory',
+                'value' => $price_calculated['site_price'],
+                'body' => 'کمسیون از خرید '.$payment->package->title,
+                'account_balance' => "0",
+            ]);
+
+            $site_commission_buy_set_safe = $this->setSafe($site_transaction->type,$site_transaction->key,$site_transaction->value);
+            if ($site_commission_buy_set_safe){
+                $site_transaction->update([
+                    'account_balance' => (string)$site_commission_buy_set_safe,
+                ]);
+            }
+
+
+
+            // Success
+            echo "تراکنش با موفقیت انجام شد";
+            echo "<br />مبلغ : ". $res["amount"];
+            echo "<br />کد پیگیری : ". $res["ref_id"];
+            echo "<br />Authority : ". $res["authority"];
+        } else {
+
+            //1- update payment
+            $payment->update([
+                'status'=> 'Canceled',
+                'body' => $res["message"]
+            ]);
+
+            // error
+            echo "پرداخت ناموفق";
+            echo "<br />کد خطا : ". $res["status"];
+            echo "<br />تفسیر و علت خطا : ". $res["message"];
+        }
+    }
+
+    public function payPriceCalculator($count,$return_price_type="R"){
+        $smsTariff=$this->getSmsTariff();
+        $commission = $this->getBuyCommissionPercentage(); //Percentage
+        $price = $smsTariff * $count;
+
+        // add commission to price
+        $price = $price * (1 + $commission /100);
+
+        if ($return_price_type == "T"){
+            $price = $price / 10;
+        }
+
+        return $price;
+    }
+
+    public function purePriceCalculator($price,$input_price_type="R",$return_price_type="R"){
+        if($input_price_type == "T"){
+            $price = $price * 10;
+        }
+        //
+        $commission = $this->getBuyCommissionPercentage(); //Percentage
+        $userPrice = $price / (1 + $commission /100);
+        $sitePrice = $price - $userPrice;
+        return [
+            'user_price'=> $return_price_type=="R" ? $userPrice : $userPrice/10,
+            'site_price'=> $return_price_type=="R" ? $sitePrice : $sitePrice/10
+        ];
     }
 }

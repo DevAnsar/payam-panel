@@ -110,6 +110,11 @@
                                     </button>
                                     </a>
                                 </div>
+                                <div class="form-group mt-5">
+                                    شارژ پنل پیامکی :
+                                    {{number_format($smsCredit)}}
+                                    عدد
+                                </div>
 
                             </div>
                         </div>

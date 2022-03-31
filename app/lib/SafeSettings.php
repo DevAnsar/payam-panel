@@ -19,6 +19,10 @@ trait SafeSettings
         return $this->getSafe($key);
     }
 
+    public function getBuyCommissionPercentage($key='usageCommission'){
+        return $this->getSafe($key);
+    }
+
     public function setSafe($type,$key,$value){
         if ($type != 'deposit' && $type != 'harvest') return false;
         if (! in_array($key,Safe::query()->pluck('key')->toArray())) return false;

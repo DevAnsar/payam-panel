@@ -26,7 +26,8 @@ class User extends Authenticatable
         'usedCount',
         'mobile',
         'loginCode',
-        'loginCodeExpire'
+        'loginCodeExpire',
+        'addMobileToCustomers',
     ];
 
     /**
@@ -62,5 +63,9 @@ class User extends Authenticatable
 
     public function links(){
         return $this->hasMany(Links::class);
+    }
+
+    public function payments(){
+        return $this->hasMany(Payment::class);
     }
 }
