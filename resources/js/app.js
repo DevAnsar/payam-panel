@@ -31,4 +31,16 @@ Vue.component('package-sms-count', require('./components/PackageSmsCount.vue').d
 
 const app = new Vue({
     el: '#app',
+    mounted(){
+        document.addEventListener('scroll',function (e) {
+            let headerTag = document.querySelector("#header");
+            let scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+            // console.log("scrollTop:",scrollTop)
+            if(scrollTop > 20){
+                headerTag.classList.add('active');
+            }else if(scrollTop <= 20){
+                headerTag.classList.remove('active');
+            }
+        })
+    }
 });

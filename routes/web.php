@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\MainController as WebMainController;
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PackageController;
@@ -38,5 +39,5 @@ Route::get('/getBuyPackages/{package}',[MainController::class,'getBuyPackage'])-
 Route::get('/getVerifyBuyPackages/{payment}',[MainController::class,'getVerifyBuyPackage'])->name('zp.buy_package.verify');
 
 Auth::routes();
-Route::get('/',function (){return view('web.welcome');});
+Route::get('/',[WebMainController::class,'index']);
 

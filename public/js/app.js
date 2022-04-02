@@ -5618,7 +5618,19 @@ Vue.component('package-sms-count', (__webpack_require__(/*! ./components/Package
  */
 
 var app = new Vue({
-  el: '#app'
+  el: '#app',
+  mounted: function mounted() {
+    document.addEventListener('scroll', function (e) {
+      var headerTag = document.querySelector("#header");
+      var scrollTop = window.pageYOffset !== undefined ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop; // console.log("scrollTop:",scrollTop)
+
+      if (scrollTop > 20) {
+        headerTag.classList.add('active');
+      } else if (scrollTop <= 20) {
+        headerTag.classList.remove('active');
+      }
+    });
+  }
 });
 
 /***/ }),
