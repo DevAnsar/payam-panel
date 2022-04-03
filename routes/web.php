@@ -19,12 +19,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/start',[MainController::class,'startPrj']);
-Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
-
-
+//Route::get('/start',[MainController::class,'startPrj']);
+Route::middleware(['auth','admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/',[MainController::class,'dashboard'])->name('dashboard');
-
     Route::middleware('auth')->group(function (){
         Route::resource('users',UserController::class);
         Route::get('users/{user}/medias/edit',[UserController::class,'showUserLinks'])->name('users.medias.edit');
@@ -37,7 +34,6 @@ Route::middleware('auth')->prefix('admin')->as('admin.')->group(function () {
 });
 Route::get('/getBuyPackages/{package}',[MainController::class,'getBuyPackage'])->middleware('auth:sanctum');
 Route::get('/getVerifyBuyPackages/{payment}',[MainController::class,'getVerifyBuyPackage'])->name('zp.buy_package.verify');
-
 Auth::routes();
 Route::get('/',[WebMainController::class,'index']);
 

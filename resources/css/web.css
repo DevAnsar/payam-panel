@@ -1,5 +1,22 @@
 :root{
-    --main-color : #ffffa0;
+    --main-color : #79acd9;
+    --footer-color : #aed3f2;
+    --cart-color : rgba(174, 211, 242, 0.6);
+
+}
+
+@font-face {
+    font-family: Vazir;
+    src: url('../fonts/Vazir/Vazir.eot');
+    src: url('../fonts/Vazir/Vazir.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/Vazir/Vazir.woff2') format('woff2'),
+    url('../fonts/Vazir/Vazir.woff') format('woff'),
+    url('../fonts/Vazir/Vazir.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+body{
+    /*font-family: Vazir !important;*/
 }
 .vh-100{
     height: 100vh;
@@ -12,6 +29,7 @@
     background-position-y: bottom;
     background-position-x: right;
     margin-bottom: 20px;
+    filter: drop-shadow(0 2px 5px rgba(6, 14, 38, 0.8));
 }
 
 #background-img-box{
@@ -25,7 +43,7 @@
 }
 
 #header{
-    height: 100px;
+    min-height: 100px;
     background-color: var(--main-color);
     position: sticky;
     top: 0;
@@ -53,7 +71,7 @@
 }
 footer{
     min-height: 100px;
-    background-color: var(--main-color);
+    background-color: var(--footer-color);
 }
 .footer-icon{
     height: 24px;
@@ -70,15 +88,18 @@ footer{
 
 /*}*/
 
-.attr-box {
+.attr-box ,.user-box {
     position: relative;
     width: 100%;
-
-    background-color: #ccc;
+    background-color: var(--cart-color);
     border-radius: 8px;
 }
-
-.attr-box:before {
+.user-box{
+    background-color: inherit !important;
+    border: 2px solid rgba(33, 37, 41,0.6);
+    border-radius: 15px !important;
+}
+.attr-box:before , .user-box:before {
     content:     "";
     display:     block;
     padding-top: 100%; /* initial ratio of 1:1*/
@@ -88,11 +109,14 @@ footer{
     top: 24px;
     position: absolute;
 }
-.attr-box .content {
+.attr-box .content ,.user-box .content{
     position: absolute;
     /*top:      0;*/
     left:     0;
     bottom:   0;
     right:    0;
     text-align: justify;
+}
+.user-box .content{
+    text-align: center !important;
 }
