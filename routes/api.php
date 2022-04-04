@@ -23,7 +23,6 @@ Route::prefix('v1')->group(function (){
 
     Route::post('/login/send_code', [UserControllerApi::class,'login_send_code']);
     Route::post('/login/mobile', [UserControllerApi::class,'login_with_mobile']);
-
     Route::group(['middleware' => ['auth:sanctum']],function () {
         Route::post('/send',[SenderController::class,'sendSocialToMobile']);
         Route::prefix('my')->group(function () {

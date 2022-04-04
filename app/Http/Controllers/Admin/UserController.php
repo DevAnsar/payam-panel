@@ -43,15 +43,26 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' =>[ 'nullable' ,'email','unique:users' ],
             'name' => 'required',
+            'mobile' => ['required','unique:users'],
             'password' => 'required|min:8',
+            'user_type' => 'nullable',
         ]);
 
+        $user_type = "User";
+        if($request->has('user_type') ){
+            $u_type = $request->input('user_type');
+            if ($u_type == "Admin"){
+                $user_type = "Admin";
+            }
+        }
         User::create([
             'name'=>$request->input('name'),
+            'mobile'=>$request->input('mobile'),
             'email'=>$request->input('email'),
-            'password'=>Hash::make($request->input('password'))
+            'password'=>Hash::make($request->input('password')),
+            'user_type'=> $user_type,
         ]);
 
         return redirect(route('admin.users.index'));
@@ -126,11 +137,30 @@ class UserController extends Controller
     {
 //        return $request->all();
         $request->validate([
-            'email' => 'required|email',
+            'email' =>[ 'nullable' ,'email' ],
             'name' => 'required',
+            'password' => 'nullable|min:8',
+            'user_type' => 'nullable',
         ]);
 
-        $user->update($request->all());
+        $user_type = $user->user_type;
+        if($request->has('user_type') ){
+            $u_type = $request->input('user_type');
+            if ($u_type == "Admin"){
+                $user_type = "Admin";
+            }
+        }
+
+        $password = $user->password;
+        if($request->has('password') ){
+            $password = Hash::make($request->input('password'));
+        }
+        $user->update([
+            'name'=>$request->input('name'),
+            'email'=>$request->input('email'),
+            'password'=>$password,
+            'user_type'=> $user_type,
+        ]);
 
         return redirect(route('admin.users.index'));
     }

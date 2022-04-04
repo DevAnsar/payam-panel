@@ -48,7 +48,7 @@
                                             <th scope="col">شماره موبایل</th>
                                             <th scope="col">نام</th>
                                             <th scope="col">ایمیل</th>
-                                            <th scope="col">وضعیت</th>
+                                            <th scope="col">نوع</th>
                                             <th scope="col">تعداد استفاده</th>
                                             <th scope="col">تنظیمات</th>
                                         </tr>
@@ -67,9 +67,15 @@
                                             <td>{{$user->name}}</td>
                                             <td>{{$user->email}}</td>
                                             <td>
-                                                <div class="badge badge-soft-primary">Confirm</div>
+                                                <div class="badge badge-soft-primary">
+                                                    @if($user->user_type == "Admin")
+                                                        ادمین
+                                                    @else
+                                                    کاربر
+                                                    @endif
+                                                </div>
                                             </td>
-                                            <td>{{$user->usedCount || '-' }}</td>
+                                            <td>{{$user->usedCount }}</td>
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="View">

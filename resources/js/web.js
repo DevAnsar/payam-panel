@@ -19,8 +19,6 @@ window.Vue = require('vue').default;
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('delete-item', require('./components/DeleteItem.vue').default);
-Vue.component('package-sms-count', require('./components/PackageSmsCount.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -28,6 +26,18 @@ Vue.component('package-sms-count', require('./components/PackageSmsCount.vue').d
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
-    el: '#app'
+const web = new Vue({
+    el: '#web',
+    mounted(){
+        document.addEventListener('scroll',function (e) {
+            let headerTag = document.querySelector("#header");
+            let scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+            // console.log("scrollTop:",scrollTop)
+            if(scrollTop > 20){
+                headerTag.classList.add('active');
+            }else if(scrollTop <= 20){
+                headerTag.classList.remove('active');
+            }
+        })
+    }
 });

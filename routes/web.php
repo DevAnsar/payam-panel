@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\admin\TransactionController;
 use App\Http\Controllers\admin\SafeController;
 use App\Http\Controllers\Admin\UserController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,6 +21,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //Route::get('/start',[MainController::class,'startPrj']);
+//Route::get('/linkstorage', function () {
+//    $exitCode = Artisan::call('storage:link', [] );
+//    echo $exitCode; // 0 exit code for no errors.
+//});
+
 Route::middleware(['auth','admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/',[MainController::class,'dashboard'])->name('dashboard');
     Route::middleware('auth')->group(function (){

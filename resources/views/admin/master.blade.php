@@ -20,7 +20,7 @@
     @yield('css-files')
     <!-- App Css-->
     <link href="{{asset('assets/css/app-rtl.min.css')}}" rel="stylesheet" type="text/css" />
-    <link href="{{asset('css/app.css')}}" rel="stylesheet" type="text/css" />
+{{--    <link href="{{asset('css/app.css')}}" rel="stylesheet" type="text/css" />--}}
 </head>
 
 <body data-topbar="colored">
@@ -34,7 +34,7 @@
         </div>
     </div>
 </div>
-
+<script src="{{asset('js/app.js')}}"></script>
 <!-- JAVASCRIPT -->
 <script src="{{asset('assets/libs/jquery/jquery.min.js')}}"></script>
 <script src="{{asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
@@ -53,6 +53,7 @@
 <script src="{{asset('assets/libs/jqvmap/maps/jquery.vmap.usa.js')}}"></script>
 @yield('js-files')
 <script src="{{asset('assets/js/app.js')}}"></script>
-<script src="{{asset('js/app.js')}}"></script>
+
+
 </body>
 </html>
