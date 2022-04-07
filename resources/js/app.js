@@ -21,6 +21,7 @@ window.Vue = require('vue').default;
 
 Vue.component('delete-item', require('./components/DeleteItem.vue').default);
 Vue.component('package-sms-count', require('./components/PackageSmsCount.vue').default);
+Vue.component('payments-chart', require('./components/PaymentsChart.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

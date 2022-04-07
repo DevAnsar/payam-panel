@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa">
 
 <head>
     <meta charset="utf-8" />
@@ -20,7 +20,7 @@
     @yield('css-files')
     <!-- App Css-->
     <link href="{{asset('assets/css/app-rtl.min.css')}}" rel="stylesheet" type="text/css" />
-{{--    <link href="{{asset('css/app.css')}}" rel="stylesheet" type="text/css" />--}}
+    <link href="{{asset('css/app.css')}}" rel="stylesheet" type="text/css" />
 </head>
 
 <body data-topbar="colored">
@@ -32,6 +32,7 @@
             @yield('content')
             @include('admin.layouts.footer')
         </div>
+
     </div>
 </div>
 <script src="{{asset('js/app.js')}}"></script>

@@ -49,8 +49,11 @@
                                     <div class="media my-2">
 
                                         <div class="media-body">
-                                            <p class="text-muted mb-2">Number of Sales</p>
-                                            <h5 class="mb-0">1,625</h5>
+                                            <p class="text-muted mb-2">
+                                                مجموع کاربران
+                                            </p>
+                                            <h5 class="mb-0">کل : {{$allUsersCount}}</h5>
+                                            <h6 class="mb-0">یک ماه گذشته : {{$lastNewUsersCount}}</h6>
                                         </div>
                                         <div class="icons-lg ml-2 align-self-center">
                                             <i class="uim uim-layer-group"></i>
@@ -60,8 +63,11 @@
                                 <li class="list-group-item">
                                     <div class="media my-2">
                                         <div class="media-body">
-                                            <p class="text-muted mb-2">Sales Revenue </p>
-                                            <h5 class="mb-0">$ 42,235</h5>
+                                            <p class="text-muted mb-2">
+                                                پیام های ارسال شده
+                                            </p>
+                                            <h5 class="mb-0">کل : {{$allSendBoxCount}}</h5>
+                                            <h6 class="mb-0">یک ماه گذشته : {{$lastSentDoxCount}}</h6>
                                         </div>
                                         <div class="icons-lg ml-2 align-self-center">
                                             <i class="uim uim-analytics"></i>
@@ -71,8 +77,11 @@
                                 <li class="list-group-item">
                                     <div class="media my-2">
                                         <div class="media-body">
-                                            <p class="text-muted mb-2">Average Price</p>
-                                            <h5 class="mb-0">$ 14.56</h5>
+                                            <p class="text-muted mb-2">
+                                                مجموع حساب
+                                            </p>
+                                            <h5 class="mb-0">اصلی : {{$amountInventory}}</h5>
+                                            <h6 class="mb-0">مالیات : {{$commissionInventory}}</h6>
                                         </div>
                                         <div class="icons-lg ml-2 align-self-center">
                                             <i class="uim uim-ruler"></i>
@@ -82,8 +91,13 @@
                                 <li class="list-group-item">
                                     <div class="media my-2">
                                         <div class="media-body">
-                                            <p class="text-muted mb-2">Product Sold</p>
-                                            <h5 class="mb-0">8,235</h5>
+                                            <p class="text-muted mb-2">
+                                                شارژ سرویس پیامک
+                                            </p>
+                                            <h5 class="mb-0">
+                                                {{$smsCredit}}
+                                                عدد
+                                            </h5>
                                         </div>
                                         <div class="icons-lg ml-2 align-self-center">
                                             <i class="uim uim-box"></i>
@@ -98,16 +112,17 @@
                     <div class="col-lg-8">
                         <div class="card">
                             <div class="card-body">
-                                <form class="form-inline float-right">
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control form-control-sm datepicker-here" data-range="true"  data-multiple-dates-separator=" - " data-language="en" placeholder="Select Date" />
-                                        <div class="input-group-append">
-                                            <span class="input-group-text"><i class="far fa-calendar font-size-12"></i></span>
-                                        </div>
-                                    </div>
-                                </form>
-                                <h5 class="header-title mb-4">Sales Report</h5>
-                                <div id="yearly-sale-chart" class="apex-charts"></div>
+                                <payments-chart :chart_data="{{json_encode($paymentsChartData)}}"></payments-chart>
+{{--                                <form class="form-inline float-right">--}}
+{{--                                    <div class="input-group mb-3">--}}
+{{--                                        <input type="text" class="form-control form-control-sm datepicker-here" data-range="true"  data-multiple-dates-separator=" - " data-language="en" placeholder="Select Date" />--}}
+{{--                                        <div class="input-group-append">--}}
+{{--                                            <span class="input-group-text"><i class="far fa-calendar font-size-12"></i></span>--}}
+{{--                                        </div>--}}
+{{--                                    </div>--}}
+{{--                                </form>--}}
+{{--                                <h5 class="header-title mb-4">Sales Report</h5>--}}
+{{--                                <div id="yearly-sale-chart" class="apex-charts"></div>--}}
                             </div>
                         </div>
                     </div>
