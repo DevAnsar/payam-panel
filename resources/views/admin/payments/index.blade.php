@@ -127,7 +127,7 @@
                                         </tbody>
                                         @else
                                             <div class="alert alert-warning">
-                                                تراکنشی تاکنون ثبت نشده است
+                                                پرداختی یافت نشد
                                             </div>
                                         @endif
                                     </table>

@@ -9,6 +9,7 @@ use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Safe;
 use App\Models\SentBox;
+use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Hekmatinasser\Verta\Verta;
@@ -81,7 +82,7 @@ class MainController extends Controller
         $lastSentDoxCount = number_format($sendBoxQuery->where("created_at",">=",Carbon::now()->subMonth())
             ->get()->count());
 
-        $amountInventory = number_format(Safe::query()->where("key","=","monyInventory")->first()->value);
+        $amountInventory = number_format(Safe::query()->where("key","=","moneyInventory")->first()->value);
         $commissionInventory=number_format(Safe::query()->where("key","=","commissionInventory")->first()->value);
 
         $apiKey = env('SMSIR_API_KEY');
@@ -91,17 +92,79 @@ class MainController extends Controller
         $smsCredit = number_format($smsClient->smsCredit()['credit']);
 
         // charts settings
-        $successPaymentsChartData=$this->paymentsChartData('1401','Paid');
-        $canceledPaymentsChartData=$this->paymentsChartData('1401','Canceled');
-        $paymentsChartData = [
+        $year = "1401";
+
+        $successPaymentsChartData=$this->paymentsChartData($year,'Paid');
+        $canceledPaymentsChartData=$this->paymentsChartData($year,'Canceled');
+        $paymentsPriceChartData = [
+            'title' => "مجموع پرداخت ها در سال $year",
             'labels'=>$successPaymentsChartData['labels'],
-            'paid_count'=>$successPaymentsChartData['counts'],
-            'paid_price'=>$successPaymentsChartData['prices'],
-            'canceled_count'=>$canceledPaymentsChartData['counts'],
-            'canceled_price'=>$canceledPaymentsChartData['prices'],
+            'data'=>[
+                $this->lineChartDataItemCreator('پرداخت های موفق',$successPaymentsChartData['prices']),
+                $this->lineChartDataItemCreator('پرداخت های ناموفق',$canceledPaymentsChartData['prices'],'rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)')
+            ],
+        ];
+        $paymentsCountChartData = [
+            'title' => "تعداد پرداخت ها در سال $year",
+            'labels'=>$successPaymentsChartData['labels'],
+            'data'=>[
+                $this->lineChartDataItemCreator('پرداخت های موفق',$successPaymentsChartData['counts']),
+                $this->lineChartDataItemCreator('پرداخت های ناموفق',$canceledPaymentsChartData['counts'],'rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)')
+            ],
+        ];
+
+        $depositMoneyChartData=$this->transactionChartData("moneyInventory","deposit",$year);
+        $harvestMoneyChartData=$this->transactionChartData("moneyInventory","harvest",$year);
+        $moneyTransactionsChartData = [
+            'title' => "گزارشات گاوصندوق - واریز و برداشت از حساب",
+            'labels'=>$depositMoneyChartData['labels'],
+            'data'=>[
+                $this->lineChartDataItemCreator('تراکنشات واریز',$depositMoneyChartData['prices']),
+                $this->lineChartDataItemCreator('تراکنشات برداشت',$harvestMoneyChartData['prices'],'rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)')
+            ],
+        ];
+        $moneyTransactionsCountChartData = [
+            'title' => "گزارشات گاوصندوق - تعداد واریز و برداشت از حساب",
+            'labels'=>$depositMoneyChartData['labels'],
+            'data'=>[
+                $this->lineChartDataItemCreator('تعداد واریز',$depositMoneyChartData['counts']),
+                $this->lineChartDataItemCreator('تعداد برداشت',$harvestMoneyChartData['counts'],'rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)')
+            ],
         ];
 
 
+        $depositCommissionChartData=$this->transactionChartData("commissionInventory","deposit",$year);
+        $harvestCommissionChartData=$this->transactionChartData("commissionInventory","harvest",$year);
+        $commissionTransactionsChartData = [
+            'title' => "گزارشات گاوصندوق - واریز و برداشت کمسیون ها",
+            'labels'=>$depositCommissionChartData['labels'],
+            'data'=>[
+                $this->lineChartDataItemCreator('کمسیون واریز',$depositCommissionChartData['prices']),
+                $this->lineChartDataItemCreator('کمسیون برداشت',$harvestCommissionChartData['prices'],'rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)')
+            ],
+        ];
+        $commissionTransactionsCountChartData = [
+            'title' => "گزارشات گاوصندوق - تعداد واریز و برداشت از کمسیون",
+            'labels'=>$depositMoneyChartData['labels'],
+            'data'=>[
+                $this->lineChartDataItemCreator('تعداد واریز',$depositCommissionChartData['counts']),
+                $this->lineChartDataItemCreator('تعداد برداشت',$harvestCommissionChartData['counts'],'rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)')
+            ],
+        ];
+
+        $usersChartData=$this->usersChartData($year);
+        $usersCountChartData = [
+            'title' => "گزارشات کاربران جدید به تفکیک ماه در سال $year",
+            'labels'=>$usersChartData['labels'],
+            'data'=>[
+                $this->lineChartDataItemCreator('کاربران جدید',$usersChartData['counts'])
+                ],
+        ];
+
+
+
+
+//        return $moneyChartData;
         return view('admin.dashboard',compact(
             'allUsersCount',
             'lastNewUsersCount',
@@ -110,7 +173,13 @@ class MainController extends Controller
             'amountInventory',
             'commissionInventory',
             'smsCredit',
-            'paymentsChartData'
+            'usersCountChartData',
+            'paymentsPriceChartData',
+            'paymentsCountChartData',
+            'moneyTransactionsChartData',
+            'moneyTransactionsCountChartData',
+            'commissionTransactionsChartData',
+            'commissionTransactionsCountChartData'
         ));
     }
 
@@ -137,6 +206,49 @@ class MainController extends Controller
         ];
     }
 
+    public function transactionChartData($key = "moneyInventory",$type="Deposit",$year='1401'){
+        $labels = [];
+        $prices = [];
+        $counts = [];
+        for($i=12; $i >= 1; $i--){
+            $monthDaysRange = $this->monthDaysRange($year,$i);
+            $persian_date = $monthDaysRange['month_name'];
+            $query = Transaction::query()
+                ->whereDate('created_at', '>=', $monthDaysRange['first_month'])
+                ->whereDate('created_at', '<=', $monthDaysRange['end_month'])
+                ->where('Key','=',$key)
+                ->whereType($type);
+
+            $labels[]=$persian_date;
+            $prices[]=$query->sum('value');
+            $counts[]=$query->get()->count();
+        }
+        return [
+            'labels'=>array_reverse($labels),
+            'prices'=>array_reverse($prices),
+            'counts'=>array_reverse($counts)
+        ];
+    }
+
+    public function usersChartData($year='1401'){
+        $labels = [];
+        $counts = [];
+        for($i=12; $i >= 1; $i--){
+            $monthDaysRange = $this->monthDaysRange($year,$i);
+            $persian_date = $monthDaysRange['month_name'];
+            $query = User::query()
+                ->whereDate('created_at', '>=', $monthDaysRange['first_month'])
+                ->whereDate('created_at', '<=', $monthDaysRange['end_month']);
+
+            $labels[]=$persian_date;
+            $counts[]=$query->get()->count();
+        }
+        return [
+            'labels'=>array_reverse($labels),
+            'counts'=>array_reverse($counts)
+        ];
+    }
+
     private function monthDaysRange($year,$month){
 
         $day = 1;
@@ -153,6 +265,30 @@ class MainController extends Controller
             'first_month'=>$first_month,
             'end_month'=>$end_month,
             'month_name'=>$month_name
+        ];
+    }
+
+    /**
+     * @param  string  $label
+     * @param  array  $data
+     * @param  string  $backgroundColor
+     * @param  string  $borderColor
+     * @param  int  $borderWidth
+     * @return array
+     */
+    private function lineChartDataItemCreator(
+        string $label,
+        array $data,
+        string $backgroundColor = 'rgba(54, 162, 235, 0.2)',
+        string $borderColor = 'rgba(54, 162, 235, 1)',
+        int $borderWidth=1
+    ){
+        return [
+            'label'=>$label,
+            'data' =>$data,
+            'backgroundColor'=>$backgroundColor,
+            'borderColor' =>$borderColor,
+            'borderWidth'=>$borderWidth
         ];
     }
 }

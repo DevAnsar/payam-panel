@@ -9,7 +9,7 @@
             <div class="container-fluid">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h4 class="page-title mb-1">مشخصات تراکنش</h4>
+                        <h4 class="page-title mb-1">مشخصات پرداخت</h4>
                         <ol class="breadcrumb m-0">
 {{--                            <li class="breadcrumb-item active">لیست کاربران ثبت نام شده</li>--}}
                         </ol>
@@ -34,8 +34,27 @@
                                 <div class="float-right ml-2">
 {{--                                    <a href="#">View all</a>--}}
                                 </div>
-                                <h5 class="header-title mb-4">مشخصات تراکنش</h5>
+                                <h5 class="header-title mb-4">مشخصات پرداخت و پرداخت کننده</h5>
                                 <div class="row">
+                                    <div class="col-12 col-md-6 mb-4">
+                                        <h4 class="card-title font-size-16 mt-0 d-inline">تاریخ ایجاد پرداخت :</h4>
+                                        <p class="card-text d-inline">
+                                            <span class="badge">
+                                            {{Verta($payment->created_at)}}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <div class="col-12 col-md-6 mb-4">
+                                        <h4 class="card-title font-size-16 mt-0 d-inline">تاریخ آخرین بروزرسانی :</h4>
+                                        <p class="card-text d-inline">
+                                            <span class="badge">
+                                            {{Verta($payment->updated_at)}}
+                                            </span>
+                                        </p>
+                                    </div>
+
+
                                     <div class="col-12 col-md-6 mb-4">
                                         <h4 class="card-title font-size-16 mt-0 d-inline">مشخصات کاربر :</h4>
                                         <p class="card-text d-inline">
@@ -107,7 +126,7 @@
                                 <div class="float-right ml-2">
                                     {{--                                    <a href="#">View all</a>--}}
                                 </div>
-                                <h5 class="header-title mb-4">وضعیت تراکنش</h5>
+                                <h5 class="header-title mb-4">وضعیت پرداخت</h5>
                                 <div class="row">
                                     <div class="col-12 col-md-6 mb-4">
                                         <h4 class="card-title font-size-16 mt-0 d-inline">شماره ارجاع :</h4>

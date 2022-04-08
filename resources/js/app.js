@@ -7,6 +7,7 @@
 require('./bootstrap');
 
 window.Vue = require('vue').default;
+window.Chart = require('chart.js/auto').default;
 
 /**
  * The following block of code may be used to automatically register your
@@ -22,6 +23,7 @@ window.Vue = require('vue').default;
 Vue.component('delete-item', require('./components/DeleteItem.vue').default);
 Vue.component('package-sms-count', require('./components/PackageSmsCount.vue').default);
 Vue.component('payments-chart', require('./components/PaymentsChart.vue').default);
+Vue.component('chart', require('./components/Chart.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

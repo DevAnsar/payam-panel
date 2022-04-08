@@ -1,9 +1,4 @@
 @extends('admin.master')
-
-@section('css-files')
-    <!-- Sweet Alert-->
-    <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css')}}" rel="stylesheet" type="text/css" />
-@endsection
 @section('content')
     <div class="page-content">
 
@@ -18,7 +13,19 @@
                         </ol>
                     </div>
                     <div class="col-md-4">
-                        @include('admin.layouts.page-settings')
+                        <div class="float-right d-none d-md-block">
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-rounded dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="mdi mdi-settings-outline mr-1"></i>
+                                    تنظیمات
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated">
+                                    <a class="dropdown-item" href="{{route('admin.transactions.create')}}">
+                                            ایجاد تراکنش جدید
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -30,7 +37,7 @@
             <div class="container-fluid">
 
                 <div class="row">
-                    <div class="col-lg-9">
+                    <div class="col-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="float-right ml-2">
@@ -69,6 +76,7 @@
                                             <th scope="col">ردیف</th>
                                             <th scope="col">آیدی</th>
                                             <th scope="col">نوع</th>
+                                            <th scope="col">تاریخ</th>
                                             <th scope="col">مقدار</th>
                                             <th scope="col">جهت</th>
                                             <th scope="col">موجودی بعد از این تراکنش</th>
@@ -108,6 +116,12 @@
                                                     </p>
 
                                             </td>
+
+                                            <th scope="row">
+                                                <span class="badge badge-soft-primary" >
+                                                {{Verta($transaction->created_at)}}
+                                                </span>
+                                            </th>
 
                                             <td>
                                                 <h4>
@@ -150,23 +164,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="header-title mb-4">تنظیمات</h5>
-
-                                <div class="form-group">
-                                    <a class="text-white" href="{{route('admin.transactions.create')}}">
-                                    <button class="btn btn-info w-100 waves-effect waves-light">
-                                            ایجاد تراکنش جدید
-                                    </button>
-                                    </a>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <!-- end row -->
 
@@ -174,9 +171,4 @@
         </div>
         <!-- end page-content-wrapper -->
     </div>
-@endsection
-
-@section('js-files')
-    <!-- Sweet Alerts js -->
-    <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 @endsection

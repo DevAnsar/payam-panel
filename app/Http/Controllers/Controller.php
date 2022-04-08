@@ -288,7 +288,8 @@ class Controller extends BaseController
             //1- update payment
             $payment->update([
                 'ref_id'=> $res['ref_id'],
-                'status'=> 'Paid'
+                'status'=> 'Paid',
+                'body'=> $payment->body . $res["message"]
             ]);
 
             //2- add package to user packages
@@ -307,7 +308,7 @@ class Controller extends BaseController
             //4- deposit commission to site account
             $user_transaction = Transaction::create([
                 'type' => 'deposit',
-                'key' => 'monyInventory',
+                'key' => 'moneyInventory',
                 'value' => $price_calculated['user_price'],
                 'body' => 'خرید'.$payment->package->title,
                 'account_balance' => "0",
