@@ -77,25 +77,21 @@
                                             </td>
                                             <td>{{$user->usedCount }}</td>
                                             <td>
-                                                <div class="btn-group" role="group">
+                                                <div class=" d-flex " role="group">
+                                                    <a href="{{route('admin.users.show',['user'=>$user])}}" class="m-2">
                                                     <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="View">
-                                                        <a href="{{route('admin.users.show',['user'=>$user])}}">
-                                                        <i class="mdi mdi-eye"></i>
-                                                        </a>
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
-                                                        <a href="{{route('admin.users.edit',['user'=>$user])}}">
-                                                           <i class="mdi mdi-pencil"></i>
-                                                        </a>
-                                                    </button>
-                                                    <delete-item url="{{"/admin/users/$user->id"}}"></delete-item>
-{{--                                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Delete">--}}
-{{--                                                        <a href="{{route('admin.users.destroy',['user'=>$user])}}">--}}
-{{--                                                        <i class="mdi mdi-trash-can"></i>--}}
-{{--                                                        </a>--}}
-{{--                                                    </button>--}}
-{{--                                                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="deleteItem({{$user->id}})">Click me</button>--}}
 
+                                                        <i class="mdi mdi-eye"></i>
+                                                    </button>
+                                                        </a>
+                                                    <a href="{{route('admin.users.edit',['user'=>$user])}}" class="m-2">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
+
+                                                           <i class="mdi mdi-pencil"></i>
+
+                                                    </button>
+                                                    </a>
+                                                    <delete-item class="m-2" url="{{"/admin/users/$user->id"}}"></delete-item>
                                                 </div>
                                             </td>
                                         </tr>

@@ -42,6 +42,13 @@
 
                 <li class="menu-title">حسابداری</li>
                 <li>
+                    <a href="{{route('admin.payments.index')}}" class=" waves-effect">
+                        <div class="d-inline-block icons-sm mr-1"><i class="uim uim-download-alt"></i></div>
+                        <span>پرداخت ها</span>
+                    </a>
+                </li>
+
+                <li>
                     <a href="{{route('admin.transactions.index')}}" class=" waves-effect">
                         <div class="d-inline-block icons-sm mr-1"><i class="uim uim-layer-group"></i></div>
                         <span>تراکنشات </span>

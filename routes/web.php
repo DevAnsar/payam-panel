@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Web\MainController as WebMainController;
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\MediaController;
@@ -37,6 +38,7 @@ Route::middleware(['auth','admin'])->prefix('admin')->as('admin.')->group(functi
     Route::resource('/packages',PackageController::class);
     Route::resource('/transactions',TransactionController::class);
     Route::resource('/safes',SafeController::class);
+    Route::resource('/payments',PaymentController::class);
 });
 Route::get('/getBuyPackages/{package}',[MainController::class,'getBuyPackage'])->middleware('auth:sanctum');
 Route::get('/getVerifyBuyPackages/{payment}',[MainController::class,'getVerifyBuyPackage'])->name('zp.buy_package.verify');
