@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\lib\SafeSettings;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 class SenderController extends Controller
 {
@@ -21,10 +18,7 @@ class SenderController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status'=>false,
-                'messages'=>$validator->messages()
-            ], Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['status'=>false],['validator_errors'=>$validator->messages()]);
         }
 
         try{
@@ -67,19 +61,19 @@ class SenderController extends Controller
                             'message'=>$message,
                             'message_len'=>strlen($message),
                             'data'=>$result['data']
-                        ],['لینک ها با موفقیت ارسال شد'],Response::HTTP_OK);
+                        ],['title'=>'لینک ها با موفقیت ارسال شد']);
 
 
                     }
                     else{
-                        return $this->baseJsonResponse(['status'=>false],['مشکلی از طرف سرویس دهنده به وجود آمد'],Response::HTTP_BAD_REQUEST);
+                        return $this->baseJsonResponse(['status'=>false],['title'=>'مشکلی از طرف سرویس دهنده به وجود آمد']);
                     }
                 }else{
-                    return $this->baseJsonResponse(['status'=>false],['موجودی حساب برای ارسال پیامک کافی نمیباشد'],Response::HTTP_BAD_REQUEST);
+                    return $this->baseJsonResponse(['status'=>false],['title'=>'موجودی حساب برای ارسال پیامک کافی نمیباشد']);
                 }
 
             }else{
-                return $this->baseJsonResponse(['status'=>false],['کاربر یافت نشد'],Response::HTTP_BAD_REQUEST);
+                return $this->baseJsonResponse(['status'=>false],['title'=>'کاربر یافت نشد']);
             }
 
         }catch (\Exception $exception){

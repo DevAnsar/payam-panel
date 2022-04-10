@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 
 class UserControllerApi extends Controller
 {
+    private int $loginCodeLifeSecond = 60;
     public function login_send_code(Request $request){
 
 //        return $request->all();
@@ -27,7 +28,7 @@ class UserControllerApi extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->baseJsonResponse([],$validator->messages(), Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['status'=>false],['validator_errors'=>$validator->messages()]);
         }
 
         try{
@@ -36,12 +37,13 @@ class UserControllerApi extends Controller
                 $user = User::create([
                     'mobile'=>$request->input('mobile'),
                     'password'=>Hash::make($request->mobile),
+                    'completed'=>false,
                 ]);
             }
 
             // Generate login code
             $code = $this->generateRandomNumber(4);
-            $message = "کد ورود شما :$code";
+            $message = "کد ورود شما به پیامکسازی :$code";
 
             // Sms : login code to device
 //            $this->sender([$user->mobile],[$message]);
@@ -49,21 +51,19 @@ class UserControllerApi extends Controller
             //
             $user->update([
                 'loginCode'=>$code,
-                'loginCodeExpire'=>Carbon::now()->addSeconds(60)
+                'loginCodeExpire'=>Carbon::now()->addSeconds($this->loginCodeLifeSecond)
             ]);
 
-            return response()->json([
-                'status'=>true,
-                'messages'=>[
-                    'title'=>'کد ورود به شماره موبایل ارسال شد',
-                    'code'=>$code,
-                ]
+            return $this->baseJsonResponse(['status'=>true],[
+                'title'=>'کد ورود به شماره موبایل ارسال شد',
+                'description'=>"کد تا $this->loginCodeLifeSecond  ثانیه معتبر میباشد",
+                'message'=>$message,
             ]);
+
         }catch (\Exception $exception){
-            return response()->json([
-                'status'=>false,
-                'messages'=>$exception->getMessage()
-            ],Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['status'=>false],[
+                $exception->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
         }
 
     }
@@ -76,45 +76,51 @@ class UserControllerApi extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status'=>false,
-                'messages'=>$validator->messages()
-            ], Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['status'=>false],[
+                $validator->messages()
+            ]);
         }
 
         try{
             $user = User::where('mobile', $request->mobile)->first();
 
             if (! $user ||  $request->code != $user->loginCode ) {
-                return response()->json([
-                    'status'=>false,
-                    'messages'=>[
-                        'title' => 'اطلاعات ورودی صحیح نمیباشد'
-                    ]
-                ],Response::HTTP_BAD_REQUEST);
+                return $this->baseJsonResponse(['status'=>false],[
+                    'title' => 'اطلاعات ورودی صحیح نمیباشد'
+                ]);
             }
             if ($user->loginCodeExpire < Carbon::now()){
-                return response()->json([
-                    'status'=>false,
-                    'messages'=>[
-                        'code' => 'کد وارد شده منقضی شده است'
-                    ]
-                ],Response::HTTP_BAD_REQUEST);
+                return $this->baseJsonResponse(['status'=>false],[
+                    'title' => 'کد وارد شده منقضی شده است'
+                ]);
+            }
+
+            // gift sms for new user when he/she register not completed
+            if (!$user->register_completed && false){
+                $smsTariff = $this->getSmsTariff();
+                $smsCountForNewUser = $this->getSafe('newUserSmsCount');
+                if ($smsCountForNewUser && $smsCountForNewUser > 0){
+                    $user->update([
+                       'register_completed'=>true,
+                       'account_balance' => $user->account_balance + ($smsCountForNewUser * $smsTariff)
+                    ]);
+                }
             }
 
             // Revoke all tokens...
 //            $user->tokens()->delete();
 
-            return response()->json([
+            return $this->baseJsonResponse([
                 'status'=>true,
                 'token'=>$user->createToken($request->device_name)->plainTextToken
-            ],Response::HTTP_OK);
+            ],[]);
 
         }catch (\Exception $exception){
-            return response()->json([
-                'status'=>false,
-                'messages'=>$exception->getMessage()
-            ],Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(
+                ['status'=>false],
+                [$exception->getMessage()],
+                Response::HTTP_BAD_REQUEST);
+
         }
 
     }
@@ -124,10 +130,10 @@ class UserControllerApi extends Controller
             $user = $request->user();
             return $this->baseJsonResponse([
                 'user'=>  $user
-            ],['مشخصات کاربر'],Response::HTTP_OK);
+            ],['title'=>'مشخصات کاربر'],Response::HTTP_OK);
 
         }catch (\Exception $exception){
-            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['status'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }
 
     }
@@ -142,7 +148,9 @@ class UserControllerApi extends Controller
             ]);
 
             if ($validator->fails()) {
-                return $this->baseJsonResponse([],$validator->messages(), Response::HTTP_BAD_REQUEST);
+                return $this->baseJsonResponse(['status'=>false],[
+                    'validator_errors'=>$validator->messages()
+                ]);
             }
 
             $user = $request->user();
@@ -154,15 +162,15 @@ class UserControllerApi extends Controller
             if ($update){
                 return $this->baseJsonResponse([
                     'status'=>  true
-                ],['مشخصات با موفقیت ثبت شد'],Response::HTTP_OK);
+                ],['title'=>'مشخصات با موفقیت ثبت شد']);
             }else{
                 return $this->baseJsonResponse([
                     'status'=>  false
-                ],['مشکلی در ویرایش مشخصات بوجود آمد'],Response::HTTP_BAD_REQUEST);
+                ],['title'=>'مشکلی در ویرایش مشخصات بوجود آمد']);
             }
 
         }catch (\Exception $exception){
-            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['status'=>  false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }
 
     }
@@ -173,11 +181,12 @@ class UserControllerApi extends Controller
             $medias = Media::query()->where('status',true)->get();
 
             return $this->baseJsonResponse([
+                'status'=>false,
                 'medias'=>  new MediaCollection($medias,$user)
-            ],['لیست لینک ها به همراه مقادیر ثبت شده توسط کاربر'],Response::HTTP_OK);
+            ],['title'=>'لیست لینک ها به همراه مقادیر ثبت شده توسط کاربر']);
 
         }catch (\Exception $exception){
-            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['status'=>  false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }
 
     }
@@ -187,17 +196,13 @@ class UserControllerApi extends Controller
             $user = $request->user();
             $res = $this->setUserLink($request->values,$user);
             if ($res){
-            return $this->baseJsonResponse([
-                'status'=>  true
-            ],['لینک ها ثبت شد'],Response::HTTP_OK);
+            return $this->baseJsonResponse(['status'=>  true],['title'=>'لینک ها ثبت شد']);
             }else{
-                return $this->baseJsonResponse([
-                    'status'=>  false
-                ],['مشکلی در ثبت لینک ها بوجود آمد'],Response::HTTP_BAD_REQUEST);
+                return $this->baseJsonResponse(['status'=>  false],['title'=>'مشکلی در ثبت لینک ها بوجود آمد']);
             }
 
         }catch (\Exception $exception){
-            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['status'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }
 
     }
@@ -208,9 +213,9 @@ class UserControllerApi extends Controller
             return $this->baseJsonResponse([
                 'status'=>  true,
                 'packages'=>new PackageCollection($packages)
-            ],['لیست پک های پیامکی'],Response::HTTP_OK);
+            ],['title'=>'لیست پک های پیامکی']);
         }catch (\Exception $exception){
-            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['status'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -221,9 +226,9 @@ class UserControllerApi extends Controller
             return $this->baseJsonResponse([
                 'status'=>  true,
                 'sent_box'=>new SentBoxCollection($user_sent_box)
-            ],['لیست آخرین ارسال ها'],Response::HTTP_OK);
+            ],['title'=>'لیست آخرین ارسال ها']);
         }catch (\Exception $exception){
-            return $this->baseJsonResponse([],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+            return $this->baseJsonResponse(['title'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }
     }
 }

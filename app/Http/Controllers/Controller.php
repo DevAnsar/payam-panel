@@ -225,7 +225,12 @@ class Controller extends BaseController
     }
 
     /**
-     * @throws \SoapFault
+     * @param $price
+     * @param $au
+     * @param  bool  $SandBox
+     * @param  bool  $ZarinGate
+     * @return array
+     * @throws
      */
     public function getVerify($price , $au ,$SandBox = true ,$ZarinGate = false){
 
