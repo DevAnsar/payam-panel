@@ -22,7 +22,7 @@ body{
     height: 100vh;
 }
 #first-sequence{
-    height: 65vh;
+    min-height: 65vh;
     position: relative;
     background-repeat: no-repeat;
     background-size: cover;

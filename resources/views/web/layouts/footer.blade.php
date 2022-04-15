@@ -1,7 +1,7 @@
 <footer class="d-flex mt-5">
     <div class="container-fluid d-flex align-items-center">
         <div class="container">
-            <div class="row d-flex flex-column justify-content-center align-items-center flex-md-row justify-content-md-between">
+            <div class="row d-flex flex-column justify-content-center align-items-center flex-md-row justify-content-md-between fs-5">
                 <div class="col-12 col-md-9 col-md-9 small text-center text-md-end mt-3 mt-md-0">
                     کلیه ی حقوق مطعلق به همکاران جوان میباشد. ©1401
                 </div>

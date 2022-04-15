@@ -15,14 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
-
 Route::prefix('v1')->group(function (){
-
-    Route::post('/login/send_code', [UserControllerApi::class,'login_send_code']);
-    Route::post('/login/mobile', [UserControllerApi::class,'login_with_mobile']);
+    Route::prefix('login')->group(function () {
+        Route::post('send_code', [UserControllerApi::class, 'login_send_code']);
+        Route::post('mobile', [UserControllerApi::class, 'login_with_mobile']);
+    });
     Route::group(['middleware' => ['auth:sanctum']],function () {
         Route::post('/send',[SenderController::class,'sendSocialToMobile']);
         Route::prefix('my')->group(function () {
