@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\MediaCollection;
 use App\Http\Resources\v1\PackageCollection;
 use App\Http\Resources\v1\SentBoxCollection;
+use App\Http\Resources\v1\UserResource;
 use App\Models\Media;
 use App\Models\Package;
 use App\Models\User;
@@ -128,8 +129,9 @@ class UserControllerApi extends Controller
     public function getMyDetails(Request $request){
         try {
             $user = $request->user();
+            $smsTariff = $this->getSmsTariff();
             return $this->baseJsonResponse([
-                'user'=>  $user
+                'user'=>  new UserResource($user,(int)$smsTariff)
             ],['title'=>'مشخصات کاربر'],Response::HTTP_OK);
 
         }catch (\Exception $exception){
@@ -156,7 +158,7 @@ class UserControllerApi extends Controller
             $user = $request->user();
             $update=$user->update([
                 'name'=>$request->name,
-                'title'=>$request->title,
+                'account_title'=>$request->title,
                 'email'=>$request->email
             ]);
             if ($update){
@@ -181,7 +183,7 @@ class UserControllerApi extends Controller
             $medias = Media::query()->where('status',true)->get();
 
             return $this->baseJsonResponse([
-                'status'=>false,
+                'status'=>true,
                 'medias'=>  new MediaCollection($medias,$user)
             ],['title'=>'لیست لینک ها به همراه مقادیر ثبت شده توسط کاربر']);
 
@@ -210,10 +212,35 @@ class UserControllerApi extends Controller
     public function getPackages(){
         try {
             $packages = Package::query()->where('status',true)->get();
+            $smsTariff = $this->getSmsTariff();
             return $this->baseJsonResponse([
                 'status'=>  true,
-                'packages'=>new PackageCollection($packages)
+                'packages'=>new PackageCollection($packages,$smsTariff)
             ],['title'=>'لیست پک های پیامکی']);
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse(['status'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function getPackage(Package $package){
+        try {
+            if ($package->status){
+                $count = $package->count;
+                $prices = $this->packPayPriceCalculator($count);
+                return $this->baseJsonResponse([
+                    'status'=>  true,
+                    'packPrice'=>$prices["mainPrice"],
+                    'commissionPercentage'=>$prices["commissionPercentage"],
+                    'commissionPrice'=>$prices["commissionPrice"],
+                    'payPrice'=>$prices["totalPrice"],
+                ],['title'=>'مشخصات و قیمت پک پیامکی']);
+            }else{
+                return $this->baseJsonResponse([
+                    'status'=>  false,
+                ],['title'=>'پکیج مورد نظر یافت نشد']);
+            }
+
+
         }catch (\Exception $exception){
             return $this->baseJsonResponse(['status'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }

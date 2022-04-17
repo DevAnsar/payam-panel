@@ -251,9 +251,10 @@ class Controller extends BaseController
 
     public function getBuyPackage(Package $package,Request $request){
         $user = $request->user();
-        $price = $this->payPriceCalculator($package->count,'T');
+        $prices = $this->packPayPriceCalculator($package->count,'T');
+        $payPrice = $prices["totalPrice"];
         $payment = $user->payments()->create([
-            'price' => $price,
+            'price' => $payPrice,
             'price_type' => "T",
             'package_id'=>$package->id,
             'mobile'=>$user->mobile,
@@ -262,7 +263,7 @@ class Controller extends BaseController
 
         if ($payment){
             return $this->getPay(
-                $price,
+                $payPrice,
                 route('zp.buy_package.verify',['payment'=>$payment->id]),
                 "خرید ".$package->title ,
                 $user->email||"",
@@ -286,10 +287,9 @@ class Controller extends BaseController
         );
 
         $user = $payment->user;
-        $price_calculated = $this->purePriceCalculator($res['amount'],$payment->price_type,"R");
         if ( $res["status"] == 100)
         {
-
+            $price_calculated = $this->purePriceCalculator($res['amount'],$payment->price_type,"R");
             //1- update payment
             $payment->update([
                 'ref_id'=> $res['ref_id'],
@@ -363,19 +363,27 @@ class Controller extends BaseController
         }
     }
 
-    public function payPriceCalculator($count,$return_price_type="R"){
+    public function packPayPriceCalculator($count,$return_price_type="R"){
         $smsTariff=$this->getSmsTariff();
         $commission = $this->getBuyCommissionPercentage(); //Percentage
-        $price = $smsTariff * $count;
+        $main_price = $smsTariff * $count;
 
         // add commission to price
-        $price = $price * (1 + $commission /100);
+        $commission_price = $main_price * $commission /100;
+        $total_price = $main_price + $commission_price;
 
         if ($return_price_type == "T"){
-            $price = $price / 10;
+            $total_price = $total_price / 10;
+            $commission_price = $commission_price / 10;
+            $main_price = $main_price / 10;
         }
 
-        return $price;
+        return [
+            "mainPrice"=>$main_price,
+            "commissionPercentage"=>$commission,
+            "commissionPrice"=>$commission_price,
+            "totalPrice"=>$total_price,
+        ];
     }
 
     public function purePriceCalculator($price,$input_price_type="R",$return_price_type="R"){

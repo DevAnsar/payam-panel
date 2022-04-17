@@ -6,6 +6,29 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class PackageCollection extends ResourceCollection
 {
+
+    /**
+     * The resource that this resource collects.
+     *
+     * @var
+     */
+    private $smsTariff;
+
+    /**
+     * Create a new resource instance.
+     *
+     * @param  mixed  $resource
+     * @param $smsTariff
+     */
+    public function __construct($resource,$smsTariff)
+    {
+        parent::__construct($resource);
+
+        $this->smsTariff = $smsTariff;
+        $this->resource = $this->collectResource($resource);
+    }
+
+
     /**
      * Transform the resource collection into an array.
      *
@@ -18,7 +41,7 @@ class PackageCollection extends ResourceCollection
             return[
                 'id'=>$pack->id,
                 'title'=>$pack->title,
-                'price'=>$pack->price,
+                'price'=>$pack->count * $this->smsTariff,
                 'count'=>$pack->count,
                 'icon'=>asset('storage/'.$pack->icon)
             ];

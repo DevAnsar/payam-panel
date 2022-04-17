@@ -30,5 +30,6 @@ Route::prefix('v1')->group(function (){
             Route::get('sent_box',[UserControllerApi::class,'getSentBox']);
         });
         Route::get('/packages',[UserControllerApi::class,'getPackages']);
+        Route::get('/packages/{package}',[UserControllerApi::class,'getPackage']);
     });
 });

@@ -39,8 +39,9 @@ class MediaCollection extends ResourceCollection
                 'base_url'=>$media->base_url
             ];
             if ($this->user){
+                $user_value_data = $this->user->links()->where('media_id',$media->id)->first();
                 $data = array_merge($data,[
-                    'user_value'=> new LinkResource($this->user->links()->where('media_id',$media->id)->first())
+                    'user_value'=> $user_value_data !== null ? $user_value_data->value : null
                 ]);
             }
 

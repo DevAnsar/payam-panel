@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\SafeController;
 use App\Http\Controllers\Admin\UserController;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,11 +20,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-//Route::get('/start',[MainController::class,'startPrj']);
-//Route::get('/linkstorage', function () {
-//    $exitCode = Artisan::call('storage:link', [] );
-//    echo $exitCode; // 0 exit code for no errors.
-//});
 
 Route::middleware(['auth','admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/',[MainController::class,'dashboard'])->name('dashboard');
@@ -39,9 +33,16 @@ Route::middleware(['auth','admin'])->prefix('admin')->as('admin.')->group(functi
     Route::resource('/transactions',TransactionController::class);
     Route::resource('/safes',SafeController::class);
     Route::resource('/payments',PaymentController::class);
+
+    // config routes
+    Route::prefix('/config')->group(function () {
+        Route::get('/start', [MainController::class, 'startPrj']);
+        Route::get('/storageLink', [MainController::class, 'storageLink']);
+    });
 });
 Route::get('/getBuyPackages/{package}',[MainController::class,'getBuyPackage'])->middleware('auth:sanctum');
 Route::get('/getVerifyBuyPackages/{payment}',[MainController::class,'getVerifyBuyPackage'])->name('zp.buy_package.verify');
+Route::get('/showBankCallBackPage',[MainController::class,'showBankCallBackPage']);
 Auth::routes();
 Route::get('/',[WebMainController::class,'index']);
 

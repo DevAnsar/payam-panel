@@ -18,9 +18,9 @@ class SentBoxCollection extends ResourceCollection
             return[
                 'id'=>$item->id,
                 'mobile'=>$item->mobile,
+                'date'=>Verta($item->created_at)->format('Y/n/j'),
+                'time'=>Verta($item->created_at)->format('H:i'),
                 'text'=>$item->text,
-                'date'=>$item->created_at,
-                'clock'=>$item->created_at
             ];
         });
     }

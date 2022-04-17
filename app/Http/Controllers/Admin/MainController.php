@@ -13,7 +13,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Hekmatinasser\Verta\Verta;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 
 class MainController extends Controller
@@ -67,6 +67,15 @@ class MainController extends Controller
         ]);
 
         return redirect(route('login'));
+    }
+
+    public function storageLink(){
+        $exitCode = Artisan::call('storage:link', [] );
+        echo $exitCode; // 0 exit code for no errors.
+    }
+
+    public function showBankCallBackPage(){
+        return view('web.bankCallBackPage');
     }
 
 
