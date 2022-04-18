@@ -5578,29 +5578,63 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "PackageSmsCount",
-  props: ['default_count', 'sms_tariff'],
+  props: ['default_price', 'default_count', 'this_package_tariff', 'sms_tariff'],
   data: function data() {
     return {
       count: 0,
-      price: 0
+      price: 0,
+      main_count: 0,
+      tariff: 0
     };
   },
   methods: {
-    setPrice: function setPrice(count) {
-      this.price = count * this.sms_tariff;
+    setCount: function setCount(price) {
+      this.count = price / this.sms_tariff;
+      this.setTariff();
+    },
+    setTariff: function setTariff() {
+      this.tariff = this.price / this.main_count;
+    },
+    priceHandler: function priceHandler() {
+      console.log('priceHandler');
+      this.main_count = this.count;
     }
   },
   mounted: function mounted() {
-    if (this.default_count) {
-      this.count = this.default_count;
+    if (this.default_price) {
+      this.price = this.default_price;
     }
 
-    this.setPrice(this.count);
+    if (this.default_count) {
+      this.main_count = this.default_count;
+    }
+
+    if (this.this_package_tariff) {
+      this.tariff = this.this_package_tariff;
+    } else {
+      this.setTariff(this.price);
+    }
   },
   updated: function updated() {
-    this.setPrice(this.count);
+    this.setCount(this.price);
   }
 });
 
@@ -42727,20 +42761,58 @@ var render = function () {
             {
               name: "model",
               rawName: "v-model",
-              value: _vm.count,
-              expression: "count",
+              value: _vm.price,
+              expression: "price",
             },
           ],
           staticClass: "form-control",
           staticStyle: { direction: "ltr" },
-          attrs: { type: "number", name: "count" },
-          domProps: { value: _vm.count },
+          attrs: { id: "price-input", type: "number", name: "price" },
+          domProps: { value: _vm.price },
+          on: {
+            change: _vm.priceHandler,
+            input: function ($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.price = $event.target.value
+            },
+          },
+        }),
+        _vm._v("\n            ریال\n        "),
+      ]),
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "form-group row" }, [
+      _c(
+        "label",
+        {
+          staticClass: "col-md-2 col-form-label",
+          attrs: { for: "count-input" },
+        },
+        [_vm._v("\n            تعداد:\n        ")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-10" }, [
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.main_count,
+              expression: "main_count",
+            },
+          ],
+          staticClass: "form-control",
+          staticStyle: { direction: "ltr" },
+          attrs: { type: "number", id: "count-input", name: "count" },
+          domProps: { value: _vm.main_count },
           on: {
             input: function ($event) {
               if ($event.target.composing) {
                 return
               }
-              _vm.count = $event.target.value
+              _vm.main_count = $event.target.value
             },
           },
         }),
@@ -42751,21 +42823,25 @@ var render = function () {
       _c(
         "label",
         {
-          staticClass: "col-12 col-form-label",
-          attrs: { for: "example-search-input" },
+          staticClass: "col-md-2 col-form-label",
+          attrs: { for: "count-input" },
         },
-        [
+        [_vm._v("\n            تعرفه:\n        ")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-10" }, [
+        _c("span", { staticClass: "badge badge-soft-info" }, [
           _vm._v(
-            "\n            قیمت:\n            " +
+            "\n                " +
               _vm._s(
                 new Intl.NumberFormat("en-US", {
                   maximumSignificantDigits: 3,
-                }).format(_vm.price)
+                }).format(_vm.tariff)
               ) +
-              "\n            ریال\n        "
+              "\n                ریال\n            "
           ),
-        ]
-      ),
+        ]),
+      ]),
     ]),
   ])
 }
@@ -42776,12 +42852,9 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c(
       "label",
-      {
-        staticClass: "col-md-2 col-form-label",
-        attrs: { for: "example-search-input" },
-      },
+      { staticClass: "col-md-2 col-form-label", attrs: { for: "price-input" } },
       [
-        _vm._v("\n            تعداد:\n            "),
+        _vm._v("\n            قیمت پکیج:\n            "),
         _c("span", { staticClass: "text-danger" }, [_vm._v("*")]),
       ]
     )

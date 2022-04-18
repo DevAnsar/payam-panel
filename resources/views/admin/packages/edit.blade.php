@@ -36,21 +36,35 @@
                                     @method('patch')
                                     @csrf
                                     <div class="form-group row">
-                                        <label for="example-search-input" class="col-md-2 col-form-label">
-
+                                        <label for="title-input" class="col-md-2 col-form-label">
                                             عنوان پک :
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-md-10">
                                             <input class="form-control" type="text" name="title"
-                                                   value="{{$package->title}}" />
+                                                   value="{{$package->title}}" id="title-input" />
                                         </div>
                                     </div>
 
                                     <package-sms-count
+                                            default_price="{{$package->price}}"
                                             default_count="{{$package->count}}"
+                                            this_package_tariff="{{(int)$package->price/(int)$package->count}}"
                                             sms_tariff="{{$smsTariff}}"
                                     ></package-sms-count>
+
+
+                                    <div class="form-group row">
+                                        <label for="days-input" class="col-md-2 col-form-label">
+
+                                            مدت اعتبار (روز) :
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-md-10">
+                                            <input class="form-control" type="number" id="days-input" name="days"
+                                                   value="{{$package->days}}" />
+                                        </div>
+                                    </div>
 
                                     <div class="form-group row">
                                         <label for="example-search-input" class="col-md-2 col-form-label">
@@ -67,12 +81,12 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <label for="example-search-input" class="col-md-2 col-form-label">
+                                        <label for="status-select" class="col-md-2 col-form-label">
                                             وضعیت:
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-md-10">
-                                            <select class="form-control" name="status" >
+                                            <select class="form-control" name="status" id="status-select" >
                                                 <option value="1"  {{$package->status == '1' ? 'selected' : null}} >فعال</option>
                                                 <option value="0"  {{$package->status == '0' ? 'selected': null }} >غیر فعال</option>
                                             </select>

@@ -41,8 +41,9 @@ class PackageCollection extends ResourceCollection
             return[
                 'id'=>$pack->id,
                 'title'=>$pack->title,
-                'price'=>$pack->count * $this->smsTariff,
+                'price'=>$pack->price,
                 'count'=>$pack->count,
+                'tariff'=>(int)$pack->price/(int)$pack->count,
                 'icon'=>asset('storage/'.$pack->icon)
             ];
         });

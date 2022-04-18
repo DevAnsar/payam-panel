@@ -15,8 +15,10 @@ return new class extends Migration
     {
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->unsignedInteger('count')->default(0);
+            $table->string('title')->nullable();
+            $table->string('price');
+            $table->string('count');
+            $table->string('days');
             $table->string('icon')->nullable();
             $table->boolean('status')->default(true);
             $table->softDeletes();

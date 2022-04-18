@@ -47,14 +47,10 @@
                                             <th scope="col">آیدی</th>
                                             <th scope="col">آیکون</th>
                                             <th scope="col">عنوان</th>
+                                            <th scope="col">قیمت</th>
+                                            <th scope="col">مدت (روز)</th>
                                             <th scope="col">تعداد پیامک</th>
-                                            <th scope="col">
-                                                قیمت
-                                            (
-                                                با تعرفه
-                                                {{$smsTariff}}
-                                                ریال)
-                                            </th>
+                                            <th scope="col">تعرفه</th>
                                             <th scope="col">وضعیت</th>
                                             <th scope="col">تنظیمات</th>
                                         </tr>
@@ -63,7 +59,7 @@
                                         @foreach($packages as $package)
                                         <tr>
                                             <th scope="row">
-                                                <a href="#">{{$loop->index}}</a>
+                                                <a href="#">{{$loop->index + 1}}</a>
                                             </th>
                                             <th scope="row">
                                                 {{$package->id}}
@@ -72,9 +68,20 @@
                                                 <img style="max-width: 32px" alt="{{$package->title}}" src="{{asset("storage/".$package->icon)}}">
                                             </td>
                                             <td>{{$package->title}}</td>
-                                            <td>{{$package->count}}</td>
                                             <td>
-                                                {{number_format($package->count * $smsTariff)}}
+                                                {{number_format((int)$package->price)}}
+                                                ریال
+                                            </td>
+                                            <td>
+                                                {{number_format((int)$package->days)}}
+                                                روز
+                                            </td>
+                                            <td>
+                                                {{number_format($package->count)}}
+                                                عدد
+                                            </td>
+                                            <td>
+                                                {{number_format((int)$package->price / (int)$package->count)}}
                                                 ریال
                                             </td>
                                             <td>

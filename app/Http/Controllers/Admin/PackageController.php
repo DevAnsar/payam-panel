@@ -16,9 +16,13 @@ class PackageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $packages = Package::query()->get();
+        $packagesQuery = Package::query();
+        if ($request->has('status') && ( $request->input('status') == 'true' || $request->input('status') == 'false') ){
+            $packagesQuery->whereStatus($request->status);
+        }
+        $packages = $packagesQuery->get();
         $smsTariff= $this->getSmsTariff();
 
         return view('admin.packages.index',compact('packages','smsTariff'));
@@ -46,7 +50,9 @@ class PackageController extends Controller
 //        return $request->all();
         $request->validate([
             'title' => 'required',
+            'price' => 'required',
             'count' => 'required',
+            'days' => 'required',
             'icon' => 'nullable',
             'status' => 'required',
         ]);
@@ -58,7 +64,9 @@ class PackageController extends Controller
 
             Package::create([
                 'title'=>$request->input('title'),
+                'price'=>$request->input('price'),
                 'count'=>$request->input('count'),
+                'days'=>$request->input('days'),
                 'icon'=>$file != null ? $file : null,
                 'status'=>$request->input('status')
             ]);
@@ -103,7 +111,9 @@ class PackageController extends Controller
     {
         $request->validate([
             'title' => 'required',
+            'price' => 'required',
             'count' => 'required',
+            'days' => 'required',
             'icon' => 'nullable',
             'status' => 'required',
         ]);
@@ -115,7 +125,9 @@ class PackageController extends Controller
             }
             $package->update([
                 'title'=>$request->input('title'),
+                'price'=>$request->input('price'),
                 'count'=>$request->input('count'),
+                'days'=>$request->input('days'),
                 'icon'=>$file != null ? $file : $package->icon,
                 'status'=>$request->input('status')
             ]);

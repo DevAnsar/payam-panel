@@ -19,6 +19,10 @@ class UserPackage extends Model
         'package_id',
         'price',
         'count',
-        'description'
+        'description',
+        'started_at',
+        'expired_at',
+        'tariff',
+        'inventory',
     ];
 }

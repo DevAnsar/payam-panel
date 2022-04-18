@@ -17,9 +17,13 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('package_id');
-            $table->string('description')->nullable();
-            $table->string('price');
             $table->unsignedInteger('count');
+            $table->string('price');
+            $table->unsignedInteger('inventory');
+            $table->timestamp('started_at');
+            $table->timestamp('expired_at');
+            $table->string('description')->nullable();
+            $table->string('tariff')->nullable();
             $table->timestamps();
         });
     }

@@ -46,11 +46,24 @@
                                                value="{{old('title')}}" />
                                     </div>
                                 </div>
+                                    <package-sms-count
+                                            default_price="{{old('price')}}"
+                                            default_count="{{old('count')}}"
+                                            this_package_tariff="{{$smsTariff}}"
+                                            sms_tariff="{{$smsTariff}}"
+                                    ></package-sms-count>
 
-                                <package-sms-count
-                                        default_count="{{old('count')}}"
-                                        sms_tariff="{{$smsTariff}}"
-                                ></package-sms-count>
+                                    <div class="form-group row">
+                                        <label for="days-input" class="col-md-2 col-form-label">
+
+                                            مدت اعتبار (روز) :
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-md-10">
+                                            <input class="form-control" type="number" id="days-input" name="days"
+                                                   value="{{old('days')}}" />
+                                        </div>
+                                    </div>
 
                                 <div class="form-group row">
                                     <label for="example-search-input" class="col-md-2 col-form-label">

@@ -386,6 +386,27 @@ class Controller extends BaseController
         ];
     }
 
+    public function packPayPrice($price,$return_price_type="R"){
+
+        $commission = $this->getBuyCommissionPercentage(); //Percentage
+
+        // add commission to price
+        $commission_price = $price * $commission /100;
+        $total_price = $price + $commission_price;
+
+        if ($return_price_type == "T"){
+            $total_price = $total_price / 10;
+            $commission_price = $commission_price / 10;
+            $price = $price / 10;
+        }
+
+        return [
+            "commissionPercentage"=>$commission,
+            "commissionPrice"=>$commission_price,
+            "totalPrice"=>$total_price,
+        ];
+    }
+
     public function purePriceCalculator($price,$input_price_type="R",$return_price_type="R"){
         if($input_price_type == "T"){
             $price = $price * 10;

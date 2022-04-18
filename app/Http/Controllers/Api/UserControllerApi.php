@@ -225,11 +225,12 @@ class UserControllerApi extends Controller
     public function getPackage(Package $package){
         try {
             if ($package->status){
-                $count = $package->count;
-                $prices = $this->packPayPriceCalculator($count);
+                $prices = $this->packPayPrice($package->price);
                 return $this->baseJsonResponse([
                     'status'=>  true,
-                    'packPrice'=>$prices["mainPrice"],
+                    'title'=>$package->title,
+                    'count'=>$package->count,
+                    'packPrice'=>$package->price,
                     'commissionPercentage'=>$prices["commissionPercentage"],
                     'commissionPrice'=>$prices["commissionPrice"],
                     'payPrice'=>$prices["totalPrice"],
