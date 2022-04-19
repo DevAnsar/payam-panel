@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\lib\SafeSettings;
 use App\Models\Media;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -76,7 +77,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $purchased_packages=$user->user_packages()->get();
+        $purchased_packages=$user->user_packages()->latest()->get();
         $user_customers=$user->user_customers()->get();
         $user_sends=$user->user_sends()->get();
 
@@ -84,6 +85,11 @@ class UserController extends Controller
         $valueSum = $mediasResponse['valueSum'];
         $medias = $mediasResponse['medias'];
         $smsTariff = $this->getSmsTariff();
+
+        $user_sms_inventory = $user->user_packages()
+            ->where('expired_at','>=',Carbon::now())
+            ->where('inventory','>','0')
+            ->sum('inventory');
 
 //        return $medias;
         return view('admin.users.show',compact(
@@ -93,7 +99,7 @@ class UserController extends Controller
             'user_customers',
             'user_sends',
             'medias',
-            'smsTariff'
+            'user_sms_inventory'
         ));
     }
 

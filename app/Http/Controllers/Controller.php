@@ -10,6 +10,7 @@ use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Transaction;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -188,7 +189,6 @@ class Controller extends BaseController
         return 0;
     }
 
-
     /**
      * @param $price
      * @param $callback
@@ -233,7 +233,6 @@ class Controller extends BaseController
      * @throws
      */
     public function getVerify($price , $au ,$SandBox = true ,$ZarinGate = false){
-
         $MerchantID 	= env('ZP_MerchantID');
         $Amount 		= $price;
 
@@ -250,8 +249,9 @@ class Controller extends BaseController
     }
 
     public function getBuyPackage(Package $package,Request $request){
-        $user = $request->user();
-        $prices = $this->packPayPriceCalculator($package->count,'T');
+//        $user = $request->user();
+        $user = User::find(6);
+        $prices = $this->packPayPrice($package->price,'T');
         $payPrice = $prices["totalPrice"];
         $payment = $user->payments()->create([
             'price' => $payPrice,
@@ -285,7 +285,6 @@ class Controller extends BaseController
             $au,
             true
         );
-
         $user = $payment->user;
         if ( $res["status"] == 100)
         {
@@ -298,17 +297,22 @@ class Controller extends BaseController
             ]);
 
             //2- add package to user packages
+            $package = $payment->package;
             $user->user_packages()->create([
                 'package_id'=> $payment->package_id,
                 'price'=> $price_calculated['user_price'],
-                'count'=> $payment->package->count,
-                'description'=>$payment->package->title,
+                'count'=> $package->count,
+                'inventory'=> $package->count,
+                'started_at'=> Carbon::now(),
+                'expired_at'=> Carbon::now()->addDays($package->days),
+                'description'=>$package->title,
+                'tariff'=>(string)((int) $package->price / (int) $package->count),
             ]);
 
             //3- update user account balance
-            $user->update([
-                'account_balance' => $user->account_balance + $price_calculated['user_price']
-            ]);
+//            $user->update([
+//                'account_balance' => $user->account_balance + $price_calculated['user_price']
+//            ]);
 
             //4- deposit commission to site account
             $user_transaction = Transaction::create([
@@ -340,9 +344,6 @@ class Controller extends BaseController
                     'account_balance' => (string)$site_commission_buy_set_safe,
                 ]);
             }
-
-
-
             // Success
             echo "تراکنش با موفقیت انجام شد";
             echo "<br />مبلغ : ". $res["amount"];

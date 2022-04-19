@@ -37,7 +37,7 @@
 
                                         <h6 class="card-subtitle font-14 text-muted">
                                             موجودی اکانت :
-                                            <span>{{$user->account_balance / $smsTariff}}</span>
+                                            <span>{{$user_sms_inventory}}</span>
                                             عدد
                                         </h6>
                                     </div>
@@ -108,7 +108,7 @@
                                         <h4 class="card-title font-size-16 mt-0 d-inline">تاریخ عضویت :</h4>
                                         <p class="card-text d-inline">
                                             @if($user->created_at)
-                                                {{$user->created_at}}
+                                                {{Verta($user->created_at)->format("%d %B %Y - H:i")}}
                                             @else
                                                 <span class="badge badge-soft-warning">
                                                 تعریف نشده
@@ -284,7 +284,10 @@
                                                         <th scope="col">عنوان</th>
                                                         <th scope="col">تعداد</th>
                                                         <th scope="col">مبلغ</th>
-                                                        <th scope="col">در تاریخ</th>
+                                                        <th scope="col">موجودی</th>
+                                                        <th scope="col">مدت بسته (روز)</th>
+                                                        <th scope="col">فعال از تاریخ</th>
+                                                        <th scope="col">اتمام در تاریخ</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -292,17 +295,25 @@
                                                     @foreach($purchased_packages as $purchased_package)
                                                         <tr>
                                                             <th scope="row">
-                                                                <a href="#">{{$loop->index}}</a>
+                                                                <a href="#">{{$loop->index +1 }}</a>
                                                             </th>
                                                             <td>{{$purchased_package->description}}</td>
-                                                            <td>{{$purchased_package->count}}</td>
+                                                            <td>{{number_format($purchased_package->count)}}</td>
                                                             <td>
                                                                 {{number_format($purchased_package->price)}}
                                                                 ریال
                                                             </td>
                                                             <td>
-                                                                {{$purchased_package->created_at}}
-
+                                                                {{number_format($purchased_package->inventory)}}
+                                                            </td>
+                                                            <td>
+                                                                {{$purchased_package->package->days}}
+                                                            </td>
+                                                            <td>
+                                                                {{Verta($purchased_package->started_at)->format("%d %B %Y - H:i")}}
+                                                            </td>
+                                                            <td>
+                                                                {{Verta($purchased_package->expired_at)->format("%d %B %Y - H:i")}}
                                                             </td>
                                                         </tr>
                                                     @endforeach

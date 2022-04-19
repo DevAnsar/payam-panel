@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\v1\MediaCollection;
 use App\Http\Resources\v1\PackageCollection;
 use App\Http\Resources\v1\SentBoxCollection;
+use App\Http\Resources\v1\UserPackageCollection;
 use App\Http\Resources\v1\UserResource;
 use App\Models\Media;
 use App\Models\Package;
@@ -254,6 +255,21 @@ class UserControllerApi extends Controller
             return $this->baseJsonResponse([
                 'status'=>  true,
                 'sent_box'=>new SentBoxCollection($user_sent_box)
+            ],['title'=>'لیست آخرین ارسال ها']);
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse(['title'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function getMyPackages(Request $request){
+        try {
+            $user = $request->user();
+            $user_packages = $user->user_packages()
+                ->where('expired_at','>=',Carbon::now())
+                ->latest()->get();
+            return $this->baseJsonResponse([
+                'status'=>  true,
+                'packages'=> new UserPackageCollection($user_packages)
             ],['title'=>'لیست آخرین ارسال ها']);
         }catch (\Exception $exception){
             return $this->baseJsonResponse(['title'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);

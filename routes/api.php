@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function (){
             Route::get('socials',[UserControllerApi::class,'getMySocials']);
             Route::post('socials',[UserControllerApi::class,'setMySocials']);
             Route::get('sent_box',[UserControllerApi::class,'getSentBox']);
+            Route::get('packages',[UserControllerApi::class,'getMyPackages']);
         });
         Route::get('/packages',[UserControllerApi::class,'getPackages']);
         Route::get('/packages/{package}',[UserControllerApi::class,'getPackage']);

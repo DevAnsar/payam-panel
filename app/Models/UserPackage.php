@@ -25,4 +25,7 @@ class UserPackage extends Model
         'tariff',
         'inventory',
     ];
+    public function package(){
+        return $this->belongsTo(Package::class);
+    }
 }
