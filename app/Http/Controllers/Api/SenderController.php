@@ -33,7 +33,7 @@ class SenderController extends Controller
                 $links = $this->createLinksMessageWithUserMedias($medias);
                 $message = $user->name ."\n".$links;
                 $message = $this->addAdToMessage($message);
-                $smsTariff = $this->getSmsTariff();
+//                $smsTariff = $this->getSmsTariff();
                 $contentCount = $this->getMessageContentCount($message);
 
                 //check user packages

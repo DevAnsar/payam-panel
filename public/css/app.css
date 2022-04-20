@@ -1,15 +1,2 @@
-@font-face {
-    font-family: Vazir;
-    src: url(/fonts/Vazir.eot?e4c3d561c9338a9b3b21805219bc3b37);
-    src: url(/fonts/Vazir.eot?e4c3d561c9338a9b3b21805219bc3b37?#iefix) format('embedded-opentype'),
-    url(/fonts/Vazir.woff2?ccd6c24b08de47e7e48520d2bcd4108f) format('woff2'),
-    url(/fonts/Vazir.woff?080edccc2bce9d230a0d52f9e1a4f132) format('woff'),
-    url(/fonts/Vazir.ttf?665ee3f59bd1eadff53fa2306587116c) format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-body{
-    font-family: Vazir !important;
-}
+@font-face{font-family:Vazir;font-style:normal;font-weight:400;src:url(/fonts/Vazir.eot?e4c3d561c9338a9b3b21805219bc3b37);src:url(/fonts/Vazir.eot?e4c3d561c9338a9b3b21805219bc3b37?#iefix) format("embedded-opentype"),url(/fonts/Vazir.woff2?ccd6c24b08de47e7e48520d2bcd4108f) format("woff2"),url(/fonts/Vazir.woff?080edccc2bce9d230a0d52f9e1a4f132) format("woff"),url(/fonts/Vazir.ttf?665ee3f59bd1eadff53fa2306587116c) format("truetype")}body{font-family:Vazir!important}
 

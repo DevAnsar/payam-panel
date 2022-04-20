@@ -84,7 +84,7 @@ class UserController extends Controller
         $mediasResponse = $this->getMediasWithUserData($user);
         $valueSum = $mediasResponse['valueSum'];
         $medias = $mediasResponse['medias'];
-        $smsTariff = $this->getSmsTariff();
+//        $smsTariff = $this->getSmsTariff();
 
         $user_sms_inventory = $user->user_packages()
             ->where('expired_at','>=',Carbon::now())
