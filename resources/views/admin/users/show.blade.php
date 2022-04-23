@@ -207,6 +207,12 @@
                                                 <a class="text-white " href="{{route('admin.users.medias.edit',['user'=>$user])}}">
                                                    <button class="btn btn-info waves-effect waves-light ">ویرایش لینک ها</button>
                                                 </a>
+
+
+                                                <a class="text-white " href="{{route('admin.users.sends.show',['user'=>$user])}}">
+                                                    <button class="btn btn-dark waves-effect waves-light ">ارسال از اکانت</button>
+                                                </a>
+
                                                 <table class="table table-centered table-hover mb-0 mt-4">
                                                     <thead>
                                                     <tr>

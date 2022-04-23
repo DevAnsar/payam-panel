@@ -190,6 +190,18 @@ class Controller extends BaseController
     }
 
     /**
+     * @param
+     * @return string
+     */
+    public function userSmsBuilder($user): string
+    {
+        $mediasResponse = $this->getMediasWithUserData($user);
+        $medias = $mediasResponse['medias'];
+        $links = $this->createLinksMessageWithUserMedias($medias);
+        $message = $user->name ."\n".$links;
+        return $this->addAdToMessage($message);
+    }
+    /**
      * @param $price
      * @param $callback
      * @param  string  $description

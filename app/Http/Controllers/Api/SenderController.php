@@ -26,14 +26,7 @@ class SenderController extends Controller
             $mobile = $request->mobile;
             $user = $request->user();
             if($user){
-
-                $mediasResponse = $this->getMediasWithUserData($user);
-                $medias = $mediasResponse['medias'];
-
-                $links = $this->createLinksMessageWithUserMedias($medias);
-                $message = $user->name ."\n".$links;
-                $message = $this->addAdToMessage($message);
-//                $smsTariff = $this->getSmsTariff();
+                $message = $this->userSmsBuilder($user);
                 $contentCount = $this->getMessageContentCount($message);
 
                 //check user packages

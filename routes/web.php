@@ -27,6 +27,8 @@ Route::middleware(['auth','admin'])->prefix('admin')->as('admin.')->group(functi
         Route::resource('users',UserController::class);
         Route::get('users/{user}/medias/edit',[UserController::class,'showUserLinks'])->name('users.medias.edit');
         Route::post('users/{user}/medias/edit',[UserController::class,'updateUserLinks'])->name('users.medias.update');
+        Route::get('users/{user}/send',[UserController::class,'sendPageShow'])->name('users.sends.show');
+        Route::post('users/{user}/send',[UserController::class,'linkSender'])->name('users.sends.send');
     });
     Route::resource('/medias',MediaController::class);
     Route::resource('/packages',PackageController::class);

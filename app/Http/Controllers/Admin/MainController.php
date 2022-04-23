@@ -94,11 +94,12 @@ class MainController extends Controller
         $amountInventory = number_format(Safe::query()->where("key","=","moneyInventory")->first()->value);
         $commissionInventory=number_format(Safe::query()->where("key","=","commissionInventory")->first()->value);
 
-        $apiKey = env('SMSIR_API_KEY');
-        $secretKey = env('SMSIR_SECRET_KEY');
-        $lineNumber = env('SMSIR_LINE_NUMBER');
-        $smsClient = new SmsIRClient($apiKey,$secretKey,$lineNumber);
-        $smsCredit = number_format($smsClient->smsCredit()['credit']);
+//        $apiKey = env('SMSIR_API_KEY');
+//        $secretKey = env('SMSIR_SECRET_KEY');
+//        $lineNumber = env('SMSIR_LINE_NUMBER');
+//        $smsClient = new SmsIRClient($apiKey,$secretKey,$lineNumber);
+//        $smsCredit = number_format($smsClient->smsCredit()['credit']);
+        $smsCredit=0;
 
         // charts settings
         $year = "1401";

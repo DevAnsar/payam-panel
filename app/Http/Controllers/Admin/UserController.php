@@ -202,4 +202,24 @@ class UserController extends Controller
             'status'=>true
         ]);
     }
+
+
+    public function sendPageShow(User $user){
+
+        return view('admin.users.send_page',compact('user'));
+    }
+
+    public function linkSender(Request $request,User $user){
+        $this->validate($request,[
+           'mobile'=>'required|size:11'
+        ]);
+        $mobile = $request->input('mobile');
+        $message = $this->userSmsBuilder($user);
+        $result = $this->sender([$mobile],[$message]);
+        if ($result['isSuccessful']){
+            return redirect(route('admin.users.show'));
+        }else{
+            return $result;
+        }
+    }
 }
