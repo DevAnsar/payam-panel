@@ -24,11 +24,12 @@ class Controller extends BaseController
     private $protocol ='SMSIR';
 
     /**
-     * @param  array  $mobiles
-     * @param $messages
-     * @return array
+     * @param array $mobiles
+     * @param array $messages
+     * @return array|string|void
      */
-    public function sender($mobiles , $messages){
+    public function sender(array $mobiles , array $messages)
+    {
 
         try{
 
@@ -52,15 +53,16 @@ class Controller extends BaseController
             }
 
         }catch (\GuzzleHttp\Exception\GuzzleException $e) {
-            error_log($e->getMessage(), 0);
+           return $e->getMessage();
         }
     }
 
     /**
-     * @param  string  $message
+     * @param string $message
      * @return string
      */
-    public function addAdToMessage($message){
+    public function addAdToMessage(string $message): string
+    {
 
         try{
             $watermark="https://payamaksazi.ir";
@@ -75,7 +77,7 @@ class Controller extends BaseController
      * @param integer $length
      * @return string
      */
-    public function generateRandomNumber($length = 8)
+    public function generateRandomNumber(int $length = 8): string
     {
         $random = "";
         srand((double)microtime() * 1000000);
@@ -109,7 +111,8 @@ class Controller extends BaseController
      * @param  $medias
      * @return string
      */
-    public function createLinksMessageWithUserMedias($medias){
+    public function createLinksMessageWithUserMedias($medias): string
+    {
         $message='';
         foreach ($medias as $media){
             if ($media->link){
@@ -123,10 +126,11 @@ class Controller extends BaseController
     /**
      * @param  array  $data
      * @param  array  $messages  ,
-     * @param  int  $status
+     * @param int $status
      * @return \Illuminate\Http\JsonResponse
      */
-    public function baseJsonResponse(array $data,array $messages,$status = Response::HTTP_OK){
+    public function baseJsonResponse(array $data, array $messages, int $status = Response::HTTP_OK): \Illuminate\Http\JsonResponse
+    {
         return response()->json(array_merge($data,['messages'=>$messages]),$status);
     }
 
@@ -166,11 +170,12 @@ class Controller extends BaseController
 
     }
 
-    /**
-     * @param  string  $message
+    /** calculate message content
+     * @param string $message
      * @return integer
      */
-    public function getMessageContentCount($message){
+    public function getMessageContentCount(string $message): int
+    {
         $message_length = strlen($message);
         if ($message_length > 0){
             if ($message_length - 70 <= 0){
@@ -188,8 +193,8 @@ class Controller extends BaseController
 
         return 0;
     }
-
     /**
+     *  create final sms content fpr user
      * @param
      * @return string
      */
@@ -204,13 +209,13 @@ class Controller extends BaseController
     /**
      * @param $price
      * @param $callback
-     * @param  string  $description
-     * @param  string  $email
-     * @param  string  $mobile
-     * @param  bool  $SandBox
-     * @param  bool  $ZarinGate
+     * @param string $description
+     * @param string $email
+     * @param string $mobile
+     * @param bool $SandBox
+     * @param bool $ZarinGate
      */
-    public function getPay($price,$callback,$description="تراکنش زرین پال",$email="",$mobile="",$SandBox = false,$ZarinGate =false){
+    public function getPay($price, $callback, string $description="تراکنش زرین پال", string $email="", string $mobile="", bool $SandBox = false, bool $ZarinGate =false){
 
         $MerchantID 	= env('ZP_MerchantID');
         $Amount 		= $price;
@@ -237,14 +242,15 @@ class Controller extends BaseController
     }
 
     /**
-     * @param $price
+     * @param string $price
      * @param $au
-     * @param  bool  $SandBox
-     * @param  bool  $ZarinGate
+     * @param bool $SandBox
+     * @param bool $ZarinGate
      * @return array
      * @throws
      */
-    public function getVerify($price , $au ,$SandBox = true ,$ZarinGate = false){
+    public function getVerify(string $price , $au , bool $SandBox = true , bool $ZarinGate = false): array
+    {
         $MerchantID 	= env('ZP_MerchantID');
         $Amount 		= $price;
 
@@ -252,7 +258,7 @@ class Controller extends BaseController
         $result = $zp->verify($Amount ,$au, $SandBox, $ZarinGate);
 
         return [
-            'status'=>isset($result["Status"]) ? $result["Status"] : -1,
+            'status'=> $result["Status"] ?? -1,
             'ref_id'=>$result["RefID"],
             'authority'=>$result["Authority"],
             'amount'=>$result["Amount"],
@@ -263,7 +269,7 @@ class Controller extends BaseController
     public function getBuyPackage(Package $package,Request $request){
 //        $user = $request->user();
         $user = User::find(6);
-        $prices = $this->packPayPrice($package->price,'T');
+        $prices = $this->packPayPrice((string)$package->price,'T');
         $payPrice = $prices["totalPrice"];
         $payment = $user->payments()->create([
             'price' => $payPrice,
@@ -274,7 +280,7 @@ class Controller extends BaseController
         ]);
 
         if ($payment){
-            return $this->getPay(
+            $this->getPay(
                 $payPrice,
                 route('zp.buy_package.verify',['payment'=>$payment->id]),
                 "خرید ".$package->title ,
@@ -300,7 +306,7 @@ class Controller extends BaseController
         $user = $payment->user;
         if ( $res["status"] == 100)
         {
-            $price_calculated = $this->purePriceCalculator($res['amount'],$payment->price_type,"R");
+            $price_calculated = $this->purePriceCalculator((string)$res['amount'],$payment->price_type,"R");
             //1- update payment
             $payment->update([
                 'ref_id'=> $res['ref_id'],
@@ -376,58 +382,68 @@ class Controller extends BaseController
         }
     }
 
-    public function packPayPriceCalculator($count,$return_price_type="R"){
-        $smsTariff=$this->getSmsTariff();
+//    public function packPayPriceCalculator($count,$return_price_type="R"){
+//        $smsTariff=$this->getSmsTariff();
+//        $commission = $this->getBuyCommissionPercentage(); //Percentage
+//        $main_price = $smsTariff * $count;
+//
+//        // add commission to price
+//        $commission_price = $main_price * $commission /100;
+//        $total_price = $main_price + $commission_price;
+//
+//        if ($return_price_type == "T"){
+//            $total_price = $total_price / 10;
+//            $commission_price = $commission_price / 10;
+//            $main_price = $main_price / 10;
+//        }
+//
+//        return [
+//            "mainPrice"=>$main_price,
+//            "commissionPercentage"=>$commission,
+//            "commissionPrice"=>$commission_price,
+//            "totalPrice"=>$total_price,
+//        ];
+//    }
+
+    /**
+     * @param string $price
+     * @param string $return_price_type
+     * @return array
+     */
+    public function packPayPrice(string $price, string $return_price_type="R"){
+
         $commission = $this->getBuyCommissionPercentage(); //Percentage
-        $main_price = $smsTariff * $count;
 
         // add commission to price
-        $commission_price = $main_price * $commission /100;
-        $total_price = $main_price + $commission_price;
+        $commission_price = (float)$price * $commission /100;
+        $total_price = (float)$price + $commission_price;
 
         if ($return_price_type == "T"){
             $total_price = $total_price / 10;
             $commission_price = $commission_price / 10;
-            $main_price = $main_price / 10;
         }
 
         return [
-            "mainPrice"=>$main_price,
-            "commissionPercentage"=>$commission,
-            "commissionPrice"=>$commission_price,
-            "totalPrice"=>$total_price,
+            "commissionPercentage"=>(string)$commission,
+            "commissionPrice"=>(string)$commission_price,
+            "totalPrice"=>(string)$total_price,
         ];
     }
 
-    public function packPayPrice($price,$return_price_type="R"){
-
-        $commission = $this->getBuyCommissionPercentage(); //Percentage
-
-        // add commission to price
-        $commission_price = $price * $commission /100;
-        $total_price = $price + $commission_price;
-
-        if ($return_price_type == "T"){
-            $total_price = $total_price / 10;
-            $commission_price = $commission_price / 10;
-            $price = $price / 10;
-        }
-
-        return [
-            "commissionPercentage"=>$commission,
-            "commissionPrice"=>$commission_price,
-            "totalPrice"=>$total_price,
-        ];
-    }
-
-    public function purePriceCalculator($price,$input_price_type="R",$return_price_type="R"){
+    /**
+     * @param string $price
+     * @param string $input_price_type
+     * @param string $return_price_type
+     * @return array
+     */
+    public function purePriceCalculator(string $price, string $input_price_type="R", string $return_price_type="R"){
         if($input_price_type == "T"){
-            $price = $price * 10;
+            $price = (float)$price * 10;
         }
         //
         $commission = $this->getBuyCommissionPercentage(); //Percentage
-        $userPrice = $price / (1 + $commission /100);
-        $sitePrice = $price - $userPrice;
+        $userPrice = (float)$price / (1 + (float)$commission /100);
+        $sitePrice = (float)$price - $userPrice;
         return [
             'user_price'=> $return_price_type=="R" ? $userPrice : $userPrice/10,
             'site_price'=> $return_price_type=="R" ? $sitePrice : $sitePrice/10

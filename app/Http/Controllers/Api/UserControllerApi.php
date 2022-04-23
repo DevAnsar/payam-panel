@@ -226,7 +226,7 @@ class UserControllerApi extends Controller
     public function getPackage(Package $package){
         try {
             if ($package->status){
-                $prices = $this->packPayPrice($package->price);
+                $prices = $this->packPayPrice((string)$package->price);
                 return $this->baseJsonResponse([
                     'status'=>  true,
                     'title'=>$package->title,

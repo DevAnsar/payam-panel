@@ -310,7 +310,7 @@
                                                                 ریال
                                                             </td>
                                                             <td>
-                                                                {{number_format($purchased_package->inventory)}}
+                                                                {{number_format((float)$purchased_package->inventory)}}
                                                             </td>
                                                             <td>
                                                                 {{$purchased_package->package->days}}

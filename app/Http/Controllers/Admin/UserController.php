@@ -217,7 +217,8 @@ class UserController extends Controller
         $message = $this->userSmsBuilder($user);
         $result = $this->sender([$mobile],[$message]);
         if ($result['isSuccessful']){
-            return redirect(route('admin.users.show'));
+
+            return redirect(route('admin.users.show',['user'=>$user]));
         }else{
             return $result;
         }
