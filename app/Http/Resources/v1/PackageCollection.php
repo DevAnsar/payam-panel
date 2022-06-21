@@ -8,23 +8,13 @@ class PackageCollection extends ResourceCollection
 {
 
     /**
-     * The resource that this resource collects.
-     *
-     * @var
-     */
-    private $smsTariff;
-
-    /**
      * Create a new resource instance.
      *
      * @param  mixed  $resource
-     * @param $smsTariff
      */
-    public function __construct($resource,$smsTariff)
+    public function __construct($resource)
     {
         parent::__construct($resource);
-
-        $this->smsTariff = $smsTariff;
         $this->resource = $this->collectResource($resource);
     }
 
@@ -43,7 +33,7 @@ class PackageCollection extends ResourceCollection
                 'title'=>$pack->title,
                 'price'=>$pack->price,
                 'count'=>$pack->count,
-                'tariff'=>(int)$pack->price/(int)$pack->count,
+                'days'=>$pack->days,
                 'icon'=>asset('storage/'.$pack->icon)
             ];
         });

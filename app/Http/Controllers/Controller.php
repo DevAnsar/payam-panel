@@ -333,40 +333,33 @@ class Controller extends BaseController
 //            ]);
 
             //4- deposit commission to site account
-            $user_transaction = Transaction::create([
-                'type' => 'deposit',
-                'key' => 'moneyInventory',
-                'value' => $price_calculated['user_price'],
-                'body' => 'خرید'.$payment->package->title,
-                'account_balance' => "0",
-            ]);
-
-            $user_buy_set_safe = $this->setSafe($user_transaction->type,$user_transaction->key,$user_transaction->value);
+            $user_buy_set_safe = $this->setSafe('deposit','moneyInventory',$price_calculated['user_price']);
             if ($user_buy_set_safe){
-                $user_transaction->update([
+                Transaction::create([
+                    'type' => 'deposit',
+                    'key' => 'moneyInventory',
+                    'value' => $price_calculated['user_price'],
+                    'body' => 'خرید'.$payment->package->title,
                     'account_balance' => (string)$user_buy_set_safe,
                 ]);
             }
 
-            $site_transaction = Transaction::create([
-                'type' => 'deposit',
-                'key' => 'commissionInventory',
-                'value' => $price_calculated['site_price'],
-                'body' => 'کمسیون از خرید '.$payment->package->title,
-                'account_balance' => "0",
-            ]);
 
-            $site_commission_buy_set_safe = $this->setSafe($site_transaction->type,$site_transaction->key,$site_transaction->value);
+            $site_commission_buy_set_safe = $this->setSafe('deposit','commissionInventory',$price_calculated['site_price']);
             if ($site_commission_buy_set_safe){
-                $site_transaction->update([
+                Transaction::create([
+                    'type' => 'deposit',
+                    'key' => 'commissionInventory',
+                    'value' => $price_calculated['site_price'],
+                    'body' => 'کمسیون از خرید '.$payment->package->title,
                     'account_balance' => (string)$site_commission_buy_set_safe,
                 ]);
             }
             // Success
-            echo "تراکنش با موفقیت انجام شد";
-            echo "<br />مبلغ : ". $res["amount"];
-            echo "<br />کد پیگیری : ". $res["ref_id"];
-            echo "<br />Authority : ". $res["authority"];
+            $message='پرداخت با موفقیت انجام شد';
+            $type='success';
+            return view('web.bankCallBackPage',compact('message','type'));
+
         } else {
 
             //1- update payment
@@ -376,9 +369,9 @@ class Controller extends BaseController
             ]);
 
             // error
-            echo "پرداخت ناموفق";
-            echo "<br />کد خطا : ". $res["status"];
-            echo "<br />تفسیر و علت خطا : ". $res["message"];
+            $message='پرداخت ناموفق.' . $res["message"];
+            $type='danger';
+            return view('web.bankCallBackPage',compact('message','type'));
         }
     }
 
@@ -448,5 +441,35 @@ class Controller extends BaseController
             'user_price'=> $return_price_type=="R" ? $userPrice : $userPrice/10,
             'site_price'=> $return_price_type=="R" ? $sitePrice : $sitePrice/10
         ];
+    }
+
+
+    public function userSmsInventory(User $user){
+        return $user->user_packages()
+            ->where('expired_at','>=',Carbon::now())
+            ->where('inventory','>','0')
+            ->sum('inventory');
+    }
+
+    public function deductionFromTheUserAccount(User $user,$contentCount){
+        $user_packages = $user->user_packages()
+            ->where('expired_at','>=',Carbon::now())
+            ->where('inventory','>','0')
+            ->orderBy('inventory','asc')
+            ->get();
+        $_content_count=$contentCount;
+        foreach ($user_packages as $user_package){
+            $pack_inventory = $user_package->inventory;
+            if ($_content_count > $pack_inventory){
+                $user_package->update(['inventory'=>'0']);
+                $_content_count = $_content_count - $pack_inventory;
+            }else{
+                $user_package->update(['inventory'=>$pack_inventory - $_content_count]);
+            }
+        }
+        // update user data
+        $user->update([
+            'usedCount' => $user->usedCount + $contentCount
+        ]);
     }
 }

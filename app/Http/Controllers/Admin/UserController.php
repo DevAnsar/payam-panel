@@ -84,12 +84,7 @@ class UserController extends Controller
         $mediasResponse = $this->getMediasWithUserData($user);
         $valueSum = $mediasResponse['valueSum'];
         $medias = $mediasResponse['medias'];
-//        $smsTariff = $this->getSmsTariff();
-
-        $user_sms_inventory = $user->user_packages()
-            ->where('expired_at','>=',Carbon::now())
-            ->where('inventory','>','0')
-            ->sum('inventory');
+        $user_sms_inventory = $this->userSmsInventory($user);
 
 //        return $medias;
         return view('admin.users.show',compact(
@@ -215,9 +210,14 @@ class UserController extends Controller
         ]);
         $mobile = $request->input('mobile');
         $message = $this->userSmsBuilder($user);
+        $contentCount = $this->getMessageContentCount($message);
         $result = $this->sender([$mobile],[$message]);
         if ($result['isSuccessful']){
-
+            $this->deductionFromTheUserAccount($user,$contentCount);
+            $user->user_sends()->create([
+                'mobile'=>$mobile,
+                'text'=>$message
+            ]);
             return redirect(route('admin.users.show',['user'=>$user]));
         }else{
             return $result;

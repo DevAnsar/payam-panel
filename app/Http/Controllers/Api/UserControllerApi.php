@@ -48,19 +48,22 @@ class UserControllerApi extends Controller
             $message = "کد ورود شما به پیامکسازی :$code";
 
             // Sms : login code to device
-//            $this->sender([$user->mobile],[$message]);
+            $result = $this->sender([$user->mobile],[$message]);
 
-            //
-            $user->update([
-                'loginCode'=>$code,
-                'loginCodeExpire'=>Carbon::now()->addSeconds($this->loginCodeLifeSecond)
-            ]);
+            if ($result['isSuccessful']){
+                $user->update([
+                    'loginCode'=>$code,
+                    'loginCodeExpire'=>Carbon::now()->addSeconds($this->loginCodeLifeSecond)
+                ]);
 
-            return $this->baseJsonResponse(['status'=>true],[
-                'title'=>'کد ورود به شماره موبایل ارسال شد',
-                'description'=>"کد تا $this->loginCodeLifeSecond  ثانیه معتبر میباشد",
-                'message'=>$message,
-            ]);
+                return $this->baseJsonResponse(['status'=>true],[
+                    'title'=>'کد ورود به شماره موبایل ارسال شد',
+                    'description'=>"کد تا $this->loginCodeLifeSecond  ثانیه معتبر میباشد",
+                    'message'=>$message,
+                ]);
+            }else{
+                return $this->baseJsonResponse(['status'=>false],["message"=>"ارسال پیامک با مشکل از طرف ارائه دهنده خدمات مواجه شد"],Response::HTTP_CONFLICT);
+            }
 
         }catch (\Exception $exception){
             return $this->baseJsonResponse(['status'=>false],[
@@ -99,6 +102,7 @@ class UserControllerApi extends Controller
 
             // gift sms for new user when he/she register not completed
             if (!$user->register_completed && false){
+                //bug this below code -> we should add package to new user account
                 $smsTariff = $this->getSmsTariff();
                 $smsCountForNewUser = $this->getSafe('newUserSmsCount');
                 if ($smsCountForNewUser && $smsCountForNewUser > 0){
@@ -213,10 +217,10 @@ class UserControllerApi extends Controller
     public function getPackages(){
         try {
             $packages = Package::query()->where('status',true)->get();
-            $smsTariff = $this->getSmsTariff();
+//            $smsTariff = $this->getSmsTariff();
             return $this->baseJsonResponse([
                 'status'=>  true,
-                'packages'=>new PackageCollection($packages,$smsTariff)
+                'packages'=>new PackageCollection($packages)
             ],['title'=>'لیست پک های پیامکی']);
         }catch (\Exception $exception){
             return $this->baseJsonResponse(['status'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
@@ -232,6 +236,7 @@ class UserControllerApi extends Controller
                     'title'=>$package->title,
                     'count'=>$package->count,
                     'packPrice'=>$package->price,
+                    'days'=>$package->days,
                     'commissionPercentage'=>$prices["commissionPercentage"],
                     'commissionPrice'=>$prices["commissionPrice"],
                     'payPrice'=>$prices["totalPrice"],
@@ -270,7 +275,45 @@ class UserControllerApi extends Controller
             return $this->baseJsonResponse([
                 'status'=>  true,
                 'packages'=> new UserPackageCollection($user_packages)
-            ],['title'=>'لیست آخرین ارسال ها']);
+            ],['title'=>'لیست بسته های فعال']);
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse(['title'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function getMyTokens(Request $request){
+        try {
+            $user = $request->user();
+            $user_tokens = $user->tokens;
+            return $this->baseJsonResponse([
+                'status'=>  true,
+                'tokens'=> $user_tokens
+            ],['title'=>'توکن های فعال شما']);
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse(['title'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function deleteMyToken(Request $request,$token_id){
+        try {
+            $user = $request->user();
+            $deleted_token = $user->tokens()->where("id",$token_id)->delete();
+            return $this->baseJsonResponse([
+                'status'=>  true,
+                'res'=> $deleted_token
+            ],['title'=>'توکن حذف شد']);
+        }catch (\Exception $exception){
+            return $this->baseJsonResponse(['title'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
+        }
+    }
+    public function deleteAllOtherMyTokens(Request $request){
+        try {
+            $user = $request->user();
+            $deleted_token = $user->currentAccessToken;
+            return $this->baseJsonResponse([
+                'status'=>  true,
+                'res'=> $deleted_token
+            ],['title'=>'همه ی توکن های دیگر حذف شد']);
         }catch (\Exception $exception){
             return $this->baseJsonResponse(['title'=>false],[$exception->getMessage()],Response::HTTP_BAD_REQUEST);
         }

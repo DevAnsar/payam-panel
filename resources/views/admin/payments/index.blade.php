@@ -73,6 +73,7 @@
                                             <th scope="col">مبلغ</th>
                                             <th scope="col">وضعیت پرداخت</th>
                                             <th scope="col">بابت</th>
+                                            <th scope="col">تاریخ</th>
                                             <th scope="col">تنظیمات</th>
                                         </tr>
                                         </thead>
@@ -87,7 +88,8 @@
                                             </th>
                                             <th scope="row">
                                                 <a href="{{route('admin.users.show',['user'=>$payment->user])}}">
-                                                {{$payment->user->name}}
+                                                    <p>{{$payment->user->name}}</p>
+                                                    <p>{{$payment->user->mobile}}</p>
                                                 </a>
                                             </th>
 
@@ -113,6 +115,9 @@
                                                 </a>
                                             </th>
 
+                                            <th>
+                                                {{Verta($payment->created_at)->format("%d %B %Y - H:i")}}
+                                            </th>
                                             <td>
                                                 <div class="btn-group" role="group">
                                                         <a href="{{route('admin.payments.show',['payment'=>$payment])}}">

@@ -28,39 +28,14 @@ class SenderController extends Controller
             if($user){
                 $message = $this->userSmsBuilder($user);
                 $contentCount = $this->getMessageContentCount($message);
-
                 //check user packages
-                $user_sms_inventory = $user->user_packages()
-                    ->where('expired_at','>=',Carbon::now())
-                    ->where('inventory','>','0')
-                    ->sum('inventory');
+                $user_sms_inventory = $this->userSmsInventory($user);
 
                 if ($user_sms_inventory && $user_sms_inventory >= $contentCount){
                         $result = $this->sender([$mobile],[$message]);
                         if ($result['isSuccessful']){
                             // update user packages
-                            $user_packages = $user->user_packages()
-                                ->where('expired_at','>=',Carbon::now())
-                                ->where('inventory','>','0')
-                                ->orderBy('inventory','asc')
-                                ->get();
-                            $_content_count=$contentCount;
-                            foreach ($user_packages as $user_package){
-                                $pack_inventory = $user_package->inventory;
-                                if ($_content_count > $pack_inventory){
-                                    $user_package->update(['inventory'=>'0']);
-                                    $_content_count = $_content_count - $pack_inventory;
-                                }else{
-                                    $user_package->update(['inventory'=>$pack_inventory - $_content_count]);
-                                    continue;
-                                }
-                            }
-
-                            // update user data
-                            $user->update([
-                                'usedCount' => $user->usedCount + $contentCount,
-                                //'account_balance' => $user->account_balance - $price
-                            ]);
+                            $this->deductionFromTheUserAccount($user,$contentCount);
 
                             // log to user sends
                             $user->user_sends()->create([
@@ -81,8 +56,8 @@ class SenderController extends Controller
                             return $this->baseJsonResponse([
                                 'status'=>true,
                                 'message'=>$message,
-                                'message_len'=>strlen($message),
-                                'data'=>$result['data']
+//                                'message_len'=>strlen($message),
+//                                'data'=>$result['data']
                             ],['title'=>'لینک ها با موفقیت ارسال شد']);
 
 

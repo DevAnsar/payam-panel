@@ -26,9 +26,12 @@ Route::prefix('v1')->group(function (){
             Route::get('details',[UserControllerApi::class,'getMyDetails']);
             Route::post('details',[UserControllerApi::class,'setMyDetails']);
             Route::get('socials',[UserControllerApi::class,'getMySocials']);
-            Route::post('socials',[UserControllerApi::class,'setMySocials']);
+            Route::post('socials/edit',[UserControllerApi::class,'setMySocials']);
             Route::get('sent_box',[UserControllerApi::class,'getSentBox']);
             Route::get('packages',[UserControllerApi::class,'getMyPackages']);
+            Route::get('tokens',[UserControllerApi::class,'getMyTokens']);
+            Route::delete('tokens/{id}',[UserControllerApi::class,'deleteMyToken']);
+            Route::delete('deleteOtherTokens',[UserControllerApi::class,'deleteAllOtherMyTokens']);
         });
         Route::get('/packages',[UserControllerApi::class,'getPackages']);
         Route::get('/packages/{package}',[UserControllerApi::class,'getPackage']);
