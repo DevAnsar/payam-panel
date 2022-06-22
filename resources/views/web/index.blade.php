@@ -9,7 +9,7 @@
                 <div class="row d-flex justify-content-center justify-content-md-start">
                     <div class="col-md-8">
                         <h1 class="text-white h2 text-center text-md-end">
-                            ارسال لینک اینستاگرام به شماره مشتری
+                            ارسال لینک شبکه های اجتماعی به شماره مشتری
                         </h1>
                         <p class="text-white h4 mt-4 mb-2 text-center text-md-end lh-lg">
                             با استفاده از اپ پیامکسازی به راحتی میتوانید

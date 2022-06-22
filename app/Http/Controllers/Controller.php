@@ -17,11 +17,12 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
+use JetBrains\PhpStorm\ArrayShape;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests,SafeSettings;
-    private $protocol ='SMSIR';
+    private string $protocol ='SMSIR';
 
     /**
      * @param array $mobiles
@@ -63,13 +64,12 @@ class Controller extends BaseController
      */
     public function addAdToMessage(string $message): string
     {
-
         try{
             $watermark="https://payamaksazi.ir";
             return $message."\n\n".$watermark;
 
-        }catch (\GuzzleHttp\Exception\GuzzleException $e) {
-            error_log($e->getMessage(), 0);
+        }catch (\Exception $e) {
+            return $message;
         }
     }
 
@@ -206,6 +206,8 @@ class Controller extends BaseController
         $message = $user->name ."\n".$links;
         return $this->addAdToMessage($message);
     }
+
+
     /**
      * @param $price
      * @param $callback
@@ -267,8 +269,8 @@ class Controller extends BaseController
     }
 
     public function getBuyPackage(Package $package,Request $request){
-//        $user = $request->user();
-        $user = User::find(6);
+        $user = $request->user();
+//        $user = User::find(6);
         $prices = $this->packPayPrice((string)$package->price,'T');
         $payPrice = $prices["totalPrice"];
         $payment = $user->payments()->create([
@@ -327,12 +329,7 @@ class Controller extends BaseController
                 'tariff'=>(string)((int) $package->price / (int) $package->count),
             ]);
 
-            //3- update user account balance
-//            $user->update([
-//                'account_balance' => $user->account_balance + $price_calculated['user_price']
-//            ]);
-
-            //4- deposit commission to site account
+            //3- deposit commission to site account
             $user_buy_set_safe = $this->setSafe('deposit','moneyInventory',$price_calculated['user_price']);
             if ($user_buy_set_safe){
                 Transaction::create([
@@ -343,7 +340,6 @@ class Controller extends BaseController
                     'account_balance' => (string)$user_buy_set_safe,
                 ]);
             }
-
 
             $site_commission_buy_set_safe = $this->setSafe('deposit','commissionInventory',$price_calculated['site_price']);
             if ($site_commission_buy_set_safe){
@@ -358,52 +354,28 @@ class Controller extends BaseController
             // Success
             $message='پرداخت با موفقیت انجام شد';
             $type='success';
-            return view('web.bankCallBackPage',compact('message','type'));
-
-        } else {
-
+        }
+        else {
             //1- update payment
             $payment->update([
                 'status'=> 'Canceled',
                 'body' => $res["message"]
             ]);
-
             // error
             $message='پرداخت ناموفق.' . $res["message"];
             $type='danger';
-            return view('web.bankCallBackPage',compact('message','type'));
         }
+        return view('web.bankCallBackPage',compact('message','type'));
     }
 
-//    public function packPayPriceCalculator($count,$return_price_type="R"){
-//        $smsTariff=$this->getSmsTariff();
-//        $commission = $this->getBuyCommissionPercentage(); //Percentage
-//        $main_price = $smsTariff * $count;
-//
-//        // add commission to price
-//        $commission_price = $main_price * $commission /100;
-//        $total_price = $main_price + $commission_price;
-//
-//        if ($return_price_type == "T"){
-//            $total_price = $total_price / 10;
-//            $commission_price = $commission_price / 10;
-//            $main_price = $main_price / 10;
-//        }
-//
-//        return [
-//            "mainPrice"=>$main_price,
-//            "commissionPercentage"=>$commission,
-//            "commissionPrice"=>$commission_price,
-//            "totalPrice"=>$total_price,
-//        ];
-//    }
 
     /**
      * @param string $price
      * @param string $return_price_type
      * @return array
      */
-    public function packPayPrice(string $price, string $return_price_type="R"){
+    public function packPayPrice(string $price, string $return_price_type="R"): array
+    {
 
         $commission = $this->getBuyCommissionPercentage(); //Percentage
 
@@ -427,9 +399,10 @@ class Controller extends BaseController
      * @param string $price
      * @param string $input_price_type
      * @param string $return_price_type
-     * @return array
+     * @return array ['user_price' => "float", 'site_price' => "float"]
      */
-    public function purePriceCalculator(string $price, string $input_price_type="R", string $return_price_type="R"){
+    public function purePriceCalculator(string $price, string $input_price_type="R", string $return_price_type="R"): array
+    {
         if($input_price_type == "T"){
             $price = (float)$price * 10;
         }
@@ -444,32 +417,57 @@ class Controller extends BaseController
     }
 
 
-    public function userSmsInventory(User $user){
-        return $user->user_packages()
-            ->where('expired_at','>=',Carbon::now())
-            ->where('inventory','>','0')
-            ->sum('inventory');
+    /**
+     * @param User $user
+     * @return int
+     */
+    public function userSmsInventory(User $user): int
+    {
+        try {
+            $user_inventory = $user->user_packages()
+                ->where('expired_at','>=',Carbon::now())
+                ->where('inventory','>','0')
+                ->sum('inventory');
+            if (!$user_inventory)return 0;
+
+            return $user_inventory;
+        }catch (\Exception $exception){
+            return 0;
+        }
+
     }
 
-    public function deductionFromTheUserAccount(User $user,$contentCount){
-        $user_packages = $user->user_packages()
-            ->where('expired_at','>=',Carbon::now())
-            ->where('inventory','>','0')
-            ->orderBy('inventory','asc')
-            ->get();
-        $_content_count=$contentCount;
-        foreach ($user_packages as $user_package){
-            $pack_inventory = $user_package->inventory;
-            if ($_content_count > $pack_inventory){
-                $user_package->update(['inventory'=>'0']);
-                $_content_count = $_content_count - $pack_inventory;
-            }else{
-                $user_package->update(['inventory'=>$pack_inventory - $_content_count]);
+    /**
+     * @param User $user
+     * @param $contentCount
+     * @return boolean
+     */
+    public function deductionFromTheUserAccount(User $user,$contentCount): bool
+    {
+        try {
+            $user_packages = $user->user_packages()
+                ->where('expired_at','>=',Carbon::now())
+                ->where('inventory','>','0')
+                ->orderBy('inventory','asc')
+                ->get();
+            $_content_count=$contentCount;
+            foreach ($user_packages as $user_package){
+                $pack_inventory = $user_package->inventory;
+                if ($_content_count > $pack_inventory){
+                    $user_package->update(['inventory'=>'0']);
+                    $_content_count = $_content_count - $pack_inventory;
+                }else{
+                    $user_package->update(['inventory'=>$pack_inventory - $_content_count]);
+                }
             }
+            // update user data
+            $user->update([
+                'usedCount' => $user->usedCount + $contentCount
+            ]);
+            return true;
+        }catch (\Exception $exception){
+            return false;
         }
-        // update user data
-        $user->update([
-            'usedCount' => $user->usedCount + $contentCount
-        ]);
+
     }
 }

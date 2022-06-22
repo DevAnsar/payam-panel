@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\AuthApiController;
+use App\Http\Controllers\Api\PackageApiController;
 use App\Http\Controllers\Api\SenderController;
 use App\Http\Controllers\Api\UserControllerApi;
 use Illuminate\Support\Facades\Route;
@@ -17,8 +19,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function (){
     Route::prefix('login')->group(function () {
-        Route::post('send_code', [UserControllerApi::class, 'login_send_code']);
-        Route::post('mobile', [UserControllerApi::class, 'login_with_mobile']);
+        Route::post('send_code', [AuthApiController::class, 'login_send_code']);
+        Route::post('mobile', [AuthApiController::class, 'login_with_mobile']);
     });
     Route::group(['middleware' => ['auth:sanctum']],function () {
         Route::post('/send',[SenderController::class,'sendSocialToMobile']);
@@ -27,13 +29,13 @@ Route::prefix('v1')->group(function (){
             Route::post('details',[UserControllerApi::class,'setMyDetails']);
             Route::get('socials',[UserControllerApi::class,'getMySocials']);
             Route::post('socials/edit',[UserControllerApi::class,'setMySocials']);
-            Route::get('sent_box',[UserControllerApi::class,'getSentBox']);
+            Route::get('sent_box',[UserControllerApi::class,'getSendBox']);
             Route::get('packages',[UserControllerApi::class,'getMyPackages']);
             Route::get('tokens',[UserControllerApi::class,'getMyTokens']);
             Route::delete('tokens/{id}',[UserControllerApi::class,'deleteMyToken']);
             Route::delete('deleteOtherTokens',[UserControllerApi::class,'deleteAllOtherMyTokens']);
         });
-        Route::get('/packages',[UserControllerApi::class,'getPackages']);
-        Route::get('/packages/{package}',[UserControllerApi::class,'getPackage']);
+        Route::get('/packages',[PackageApiController::class,'getPackages']);
+        Route::get('/packages/{package}',[PackageApiController::class,'getPackage']);
     });
 });

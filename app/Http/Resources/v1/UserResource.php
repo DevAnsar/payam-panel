@@ -13,7 +13,7 @@ class UserResource extends JsonResource
      *
      * @var integer
      */
-    private int $smsTariff;
+    private int $userSmsInventory;
 
     /**
      * Create a new resource instance.
@@ -21,9 +21,9 @@ class UserResource extends JsonResource
      * @param  mixed  $resource
      * @param $smsTariff
      */
-    public function __construct($resource,$smsTariff)
+    public function __construct($resource,$userSmsInventory)
     {
-        $this->smsTariff = $smsTariff;
+        $this->userSmsInventory = $userSmsInventory;
         $this->resource = $resource;
     }
 
@@ -42,7 +42,7 @@ class UserResource extends JsonResource
             'mobile' => $this->mobile,
             'email'=>$this->email,
             'usedCount'=>$this->usedCount,
-            'accountBalance'=> ceil((int)$this->account_balance / $this->smsTariff),
+            'accountBalance'=> $this->userSmsInventory,
             'addMobileToCustomers'=>$this->addMobileToCustomers,
             'created_at'=>Verta($this->created_at)->format('%d %B %Y'),
         ];

@@ -4,15 +4,22 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\lib\SafeSettings;
-use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class SenderController extends Controller
 {
     use SafeSettings;
-    public function sendSocialToMobile(Request $request){
+
+    /**
+     * send authenticated user socials to customer
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendSocialToMobile(Request $request): JsonResponse
+    {
 
         $validator = Validator::make($request->all(), [
             'mobile' => 'required|size:11'
@@ -75,7 +82,7 @@ class SenderController extends Controller
             }
 
         }catch (\Exception $exception){
-            return $this->baseJsonResponse(['status'=>false],[$exception->getMessage()],Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->baseJsonResponse(['status'=>false],[$exception->getMessage()], ResponseAlias::HTTP_INTERNAL_SERVER_ERROR);
         }
 
     }
