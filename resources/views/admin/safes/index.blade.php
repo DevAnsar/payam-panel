@@ -106,10 +106,30 @@
                                 <div class="form-group">
                                     <a class="text-white" href="{{route('admin.safes.create')}}">
                                     <button class="btn btn-info w-100 waves-effect waves-light">
-                                            ایجاد فیلد
+                                            ایجاد فیلد جدید برای گاوصندوق
                                     </button>
                                     </a>
+
                                 </div>
+                                <div class="form-group mt-4">
+                                    <a class="text-white mt-4" href="{{route('admin.config.linkToStorage')}}">
+                                        <button class="btn btn-info w-100 waves-effect waves-light">
+                                            storage:link
+                                        </button>
+                                    </a>
+
+                                </div>
+
+
+                                <div class="form-group mt-4">
+                                    <a class="text-white mt-4" href="{{route('admin.config.hardReset')}}">
+                                        <button class="btn btn-warning w-100 waves-effect waves-light">
+                                            !Hard Reset!
+                                        </button>
+                                    </a>
+
+                                </div>
+
                                 <div class="form-group mt-5">
                                     شارژ پنل پیامکی :
                                     {{number_format($smsCredit)}}

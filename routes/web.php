@@ -39,7 +39,8 @@ Route::middleware(['auth','admin'])->prefix('admin')->as('admin.')->group(functi
     // config routes
     Route::prefix('/config')->group(function () {
         Route::get('/start', [MainController::class, 'startPrj']);
-        Route::get('/storageLink', [MainController::class, 'storageLink']);
+        Route::get('/storageLink', [MainController::class, 'storageLink'])->name("config.linkToStorage");
+        Route::get('/hardResetData', [MainController::class, 'hardReset'])->name("config.hardReset");
     });
 });
 Route::get('/getBuyPackages/{package}',[MainController::class,'getBuyPackage'])->middleware('auth:sanctum');
