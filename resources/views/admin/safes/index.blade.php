@@ -122,7 +122,7 @@
 
 
                                 <div class="form-group mt-4">
-                                    <a class="text-white mt-4" href="{{route('admin.config.hardReset')}}">
+                                    <a class="text-white mt-4" href="{{route('admin.config.hardResetShow')}}">
                                         <button class="btn btn-warning w-100 waves-effect waves-light">
                                             !Hard Reset!
                                         </button>

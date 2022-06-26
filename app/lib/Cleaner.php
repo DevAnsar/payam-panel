@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use RealRashid\SweetAlert\Facades\Alert;
 
 trait Cleaner
 {
@@ -74,6 +75,10 @@ trait Cleaner
         echo $exitCode; // 0 exit code for no errors.
     }
 
+    public function hardResetShowAlert(){
+        Alert::html('آیا مطمعن هستید',"<a href=".route("admin.config.hardReset").">ریست کن</a>", 'warning');
+        return redirect(route("admin.safes.index"));
+    }
     public function hardReset(Request $request){
         $user = $request->user();
         if ($user->mobile == "09306029572"){
@@ -89,6 +94,7 @@ trait Cleaner
             $commissionInventory?->update([
                 "value"=>"0"
             ]);
+            Alert::success('موفق',"",);
         }
         return redirect(route("admin.safes.index"));
     }

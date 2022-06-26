@@ -32,7 +32,7 @@
             @yield('content')
             @include('admin.layouts.footer')
         </div>
-
+        @include('sweetalert::alert')
     </div>
 </div>
 <script src="{{asset('js/app.js')}}"></script>

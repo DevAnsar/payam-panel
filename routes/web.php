@@ -40,6 +40,7 @@ Route::middleware(['auth','admin'])->prefix('admin')->as('admin.')->group(functi
     Route::prefix('/config')->group(function () {
         Route::get('/start', [MainController::class, 'startPrj']);
         Route::get('/storageLink', [MainController::class, 'storageLink'])->name("config.linkToStorage");
+        Route::get('/hardResetShowAlert', [MainController::class, 'hardResetShowAlert'])->name("config.hardResetShow");
         Route::get('/hardResetData', [MainController::class, 'hardReset'])->name("config.hardReset");
     });
 });
@@ -47,5 +48,11 @@ Route::get('/getBuyPackages/{package}',[MainController::class,'getBuyPackage'])-
 Route::get('/getVerifyBuyPackages/{payment}',[MainController::class,'getVerifyBuyPackage'])->name('zp.buy_package.verify');
 Route::get('/showBankCallBackPage',[MainController::class,'showBankCallBackPage']);
 Auth::routes();
-Route::get('/',[WebMainController::class,'index']);
+Route::as("web.")->group(function (){
+    Route::get('/',[WebMainController::class,'indexPage'])->name('index');
+    Route::get('/about-us',[WebMainController::class,'aboutUsPage'])->name('about-us');
+    Route::get('/contact-us',[WebMainController::class,'contactUsPage'])->name('contact-us');
+    Route::post('/contact-us',[WebMainController::class,'saveContact'])->name('contact-us.send');
+});
+
 

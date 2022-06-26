@@ -3,10 +3,12 @@
     <div class="container container-md ">
         <nav class="navbar navbar-expand-lg navbar-dark text-white" >
         <div class="d-flex flex-grow-1">
-            <img class="app-logo" alt="logo" src="{{asset("images/logo-light.png")}}">
-            <span class="me-2 mb-0 h4 d-flex align-items-center">
-                پیامکسازی
-            </span>
+            <a href="{{route("web.index")}}" class="d-flex text-decoration-none">
+                <img class="app-logo" alt="logo" src="{{asset("images/logo-light.png")}}">
+                <span class="me-2 mb-0 h4 d-flex align-items-center text-white ">
+                    پیامکسازی
+                </span>
+            </a>
 
 
             <div class="w-100 d-flex justify-content-end">
@@ -31,12 +33,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#about-us" class="nav-link m-2 menu-item text-white">
+                    <a href="{{route("web.about-us")}}" class="nav-link m-2 menu-item text-white">
                         <span>درباره ما</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="mailto:ansarmirzayi@gmail.com" class="nav-link m-2 menu-item text-white">
+                    <a href="{{route("web.contact-us")}}" class="nav-link m-2 menu-item text-white">
                         <span>ارتباط با ما</span>
                     </a>
                 </li>

@@ -168,6 +168,7 @@ return [
          * Package Service Providers...
          */
         Hekmatinasser\Verta\Laravel\VertaServiceProvider::class,
+        RealRashid\SweetAlert\SweetAlertServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -192,6 +193,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'Verta' => Hekmatinasser\Verta\Verta::class,
+        'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
     ])->toArray(),
 
 ];

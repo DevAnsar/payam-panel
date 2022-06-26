@@ -30,6 +30,7 @@
     @include('web.layouts.header')
     @yield('content')
     @include('web.layouts.footer')
+    @include('sweetalert::alert')
 </div>
 <!-- JAVASCRIPT -->
 <script src="{{asset('js/web.js')}}"></script>
